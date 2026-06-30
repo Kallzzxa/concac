@@ -46,7 +46,6 @@ import com.rstarx.hexrays.launcher.util.ConfigValidator;
 import com.rstarx.hexrays.launcher.util.SAMPServerInfo;
 import com.rstarx.hexrays.launcher.util.SampQueryAPI;
 import com.rstarx.hexrays.launcher.util.SharedPreferenceCore;
-import com.rstarx.hexrays.launcher.util.SignatureChecker;
 import com.rstarx.hexrays.launcher.util.ViewPagerWithoutSwipe;
 
 import org.json.JSONArray;
@@ -63,6 +62,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+
 @Obfuscate
 public class MainActivity extends AppCompatActivity {
 
@@ -93,12 +93,7 @@ public class MainActivity extends AppCompatActivity {
 
         ConfigValidator.validateConfigFiles(this);
 
-        if(!SignatureChecker.isSignatureValid(this, getPackageName()))
-        {
-            Toast.makeText(this, "Use original launcher! No remake", Toast.LENGTH_LONG).show();
-            return;
-        }
-
+        // ĐÃ XÓA BLOCK KIỂM TRA CHỮ KÝ Ở ĐÂY để tránh bị chặn Toast cảnh báo bẻ khóa.
 
         File file = new File(getExternalFilesDir(null) + "/download/update.apk");
         if (file.exists()) {
