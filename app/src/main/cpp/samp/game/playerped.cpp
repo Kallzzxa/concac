@@ -2278,7 +2278,6 @@ void CPlayerPed::SetWeaponSkill(uint32_t iWeaponType, uint16_t byteSkill)
 int GetInternalBoneIDFromSampID(int sampid);
 
 void CPlayerPed::AttachObject(ATTACHED_OBJECT_INFO* pInfo, int iSlot)
-void CPlayerPed::AttachObject(ATTACHED_OBJECT_INFO* pInfo, int iSlot)
 {
     FLog("===== AttachObject =====");
 
