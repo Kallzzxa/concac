@@ -7,18 +7,16 @@ plugins {
 android {
     signingConfigs {
         getByName("debug") {
-            // Đã sửa thành đường dẫn tương đối nằm trong thư mục app
             storeFile = file("keystore_playmarket2.jks")
-            storePassword = "hayk2010"
-            keyPassword = "hayk2010"
-            keyAlias = "key0"
+            storePassword = System.getenv("STORE_PASSWORD") ?: "hayk2010"
+            keyPassword = System.getenv("KEY_PASSWORD") ?: "hayk2010"
+            keyAlias = System.getenv("KEY_ALIAS") ?: "key0"
         }
         create("release") {
-            // Đã sửa thành đường dẫn tương đối nằm trong thư mục app
             storeFile = file("keystore_playmarket2.jks")
-            keyAlias = "key0"
-            storePassword = "hayk2010"
-            keyPassword = "hayk2010"
+            storePassword = System.getenv("STORE_PASSWORD") ?: "hayk2010"
+            keyPassword = System.getenv("KEY_PASSWORD") ?: "hayk2010"
+            keyAlias = System.getenv("KEY_ALIAS") ?: "key0"
         }
     }
     namespace = "com.rstarx.hexrays"
@@ -160,29 +158,32 @@ dependencies {
     implementation(libs.shadowhook)
 }
 
-afterEvaluate {
-    android.applicationVariants.all {
-        val variant = this
-        val taskName = "copy${variant.name.replaceFirstChar { if (it.isLowerCase()) it.uppercase() else it.toString() }}ApksToLaragon"
-        
-        tasks.register<Copy>(taskName) {
-            doNotTrackState("Destination directory contains unreadable content")
-            description = "Copies ${variant.name} APKs to Laragon www directory"
-            into("C:\\laragon\\www")
+// Chỉ đăng ký task Laragon nếu đang chạy ở máy cá nhân (Không chạy trên GitHub Actions)
+if (System.getenv("GITHUB_ACTIONS") == null) {
+    afterEvaluate {
+        android.applicationVariants.all {
+            val variant = this
+            val taskName = "copy${variant.name.replaceFirstChar { if (it.isLowerCase()) it.uppercase() else it.toString() }}ApksToLaragon"
             
-            variant.outputs.all {
-                @Suppress("DEPRECATION")
-                val output = this as com.android.build.gradle.api.BaseVariantOutput
-                from(output.outputFile)
+            tasks.register<Copy>(taskName) {
+                doNotTrackState("Destination directory contains unreadable content")
+                description = "Copies ${variant.name} APKs to Laragon www directory"
+                into("C:\\laragon\\www")
+                
+                variant.outputs.all {
+                    @Suppress("DEPRECATION")
+                    val output = this as com.android.build.gradle.api.BaseVariantOutput
+                    from(output.outputFile)
+                }
+                
+                doLast {
+                    println("Copied APKs for variant '${variant.name}' to C:\\laragon\\www")
+                }
             }
             
-            doLast {
-                println("Copied APKs for variant '${variant.name}' to C:\\laragon\\www")
+            variant.assembleProvider.configure {
+                finalizedBy(taskName)
             }
-        }
-        
-        variant.assembleProvider.configure {
-            finalizedBy(taskName)
         }
     }
 }
