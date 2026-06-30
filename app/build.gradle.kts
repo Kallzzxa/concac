@@ -7,7 +7,6 @@ plugins {
 android {
     signingConfigs {
     getByName("debug") {
-        storeFile = file("keystore_playmarket2.jks")
         storePassword = System.getenv("STORE_PASSWORD") ?: "hayk2010"
         keyAlias = System.getenv("KEY_ALIAS") ?: "key0"
         keyPassword = System.getenv("KEY_PASSWORD") ?: "hayk2010"
