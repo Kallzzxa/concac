@@ -155,23 +155,8 @@ bool CLocalPlayer::Process()
     // Safety Check
     if (!m_pPlayerPed || !m_pPlayerPed->m_pPed) 
         return false;
+	m_pPlayerPed->ProcessAttach();
 
-    // SA-MP Specifics (Race & Drunk from)
-    /*if (CMultiplayer::m_bRaceCheckpointsEnabled)
-    {
-        if (DistanceBetweenPoints2D(CMultiplayer::m_vecRaceCheckpointPos, m_pPlayerPed->m_pPed->GetPosition()) <= CMultiplayer::m_fRaceCheckpointSize) 
-        {
-            CMultiplayer::RaceCheckpointPicked();
-        }
-    }
-
-    if (m_pPlayerPed->drunk_level > 0) 
-    {
-        m_pPlayerPed->drunk_level--;
-        ScriptCommand(&SET_PLAYER_DRUNKENNESS, m_pPlayerPed->m_bytePlayerNumber, m_pPlayerPed->drunk_level / 100);
-    }*/
-
-    // Death Logic
     if (m_bIsActive)
     {
         // Check if dead or action is death
