@@ -29,7 +29,6 @@ import androidx.core.content.FileProvider;
 import com.joom.paranoid.Obfuscate;
 import com.rstarx.hexrays.R;
 import com.rstarx.hexrays.launcher.config.Config;
-import com.rstarx.hexrays.launcher.util.SignatureChecker;
 
 import java.io.File;
 
@@ -206,11 +205,7 @@ public class UpdateActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update);
 
-        if(!SignatureChecker.isSignatureValid(this, getPackageName()))
-        {
-            Toast.makeText(this, "Use original launcher! No remake", Toast.LENGTH_LONG).show();
-            return;
-        }
+        // Đoạn kiểm tra SignatureChecker tại đây đã được loại bỏ thành công.
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -314,4 +309,4 @@ public class UpdateActivity extends AppCompatActivity{
             mIsBind = false;
         }
     }
-              }
+}
