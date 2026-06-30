@@ -2278,26 +2278,79 @@ void CPlayerPed::SetWeaponSkill(uint32_t iWeaponType, uint16_t byteSkill)
 int GetInternalBoneIDFromSampID(int sampid);
 
 void CPlayerPed::AttachObject(ATTACHED_OBJECT_INFO* pInfo, int iSlot)
+void CPlayerPed::AttachObject(ATTACHED_OBJECT_INFO* pInfo, int iSlot)
 {
+    FLog("===== AttachObject =====");
+
     if (GetAttachedObject(iSlot))
     {
+        FLog("Slot %d already occupied, detaching...", iSlot);
         DeattachObject(iSlot);
     }
+
     auto& attach = m_aAttachedObject[iSlot] = CAttachedPlayerObject();
 
-    attach.vecRotation  = pInfo->vecRotation;
-    attach.vecOffset    = pInfo->vecOffset;
-    attach.dwModelId    = pInfo->dwModelId;
-    attach.vecScale     = pInfo->vecScale;
-    attach.dwColor[0]   = pInfo->dwColor[0];
-    attach.dwColor[1]   = pInfo->dwColor[1];
-    attach.dwSampBone   = pInfo->dwBoneId_MP;
-    attach.dwBone = GetInternalBoneIDFromSampID(attach.dwSampBone);
+    attach.vecRotation = pInfo->vecRotation;
+    attach.vecOffset   = pInfo->vecOffset;
+    attach.dwModelId   = pInfo->dwModelId;
+    attach.vecScale    = pInfo->vecScale;
+    attach.dwColor[0]  = pInfo->dwColor[0];
+    attach.dwColor[1]  = pInfo->dwColor[1];
+    attach.dwSampBone  = pInfo->dwBoneId_MP;
+    attach.dwBone      = GetInternalBoneIDFromSampID(attach.dwSampBone);
+
+    FLog("ModelID: %d", attach.dwModelId);
+    FLog("Slot: %d", iSlot);
+    FLog("SAMP Bone: %d", attach.dwSampBone);
+    FLog("Internal Bone: %d", attach.dwBone);
+
+    FLog("Offset: %.3f %.3f %.3f",
+        attach.vecOffset.x,
+        attach.vecOffset.y,
+        attach.vecOffset.z);
+
+    FLog("Rotation: %.3f %.3f %.3f",
+        attach.vecRotation.x,
+        attach.vecRotation.y,
+        attach.vecRotation.z);
+
+    FLog("Scale: %.3f %.3f %.3f",
+        attach.vecScale.x,
+        attach.vecScale.y,
+        attach.vecScale.z);
 
     CVector vecPos = m_pPed->GetPosition();
-    CVector vecRot{ 0.0f, 0.0f, 0.0f };
-    attach.pObject = new CObject(pInfo->dwModelId, vecPos, vecRot, 200.0f, 1);
+    CVector vecRot{0.0f, 0.0f, 0.0f};
+
+    FLog("Player Pos: %.3f %.3f %.3f",
+        vecPos.x,
+        vecPos.y,
+        vecPos.z);
+
+    attach.pObject = new CObject(
+        attach.dwModelId,
+        vecPos,
+        vecRot,
+        200.0f,
+        1);
+
+    if (!attach.pObject)
+    {
+        FLog("ERROR: new CObject failed!");
+        return;
+    }
+
+    if (!attach.pObject->m_pEntity)
+    {
+        FLog("ERROR: m_pEntity == nullptr");
+        return;
+    }
+
+    FLog("Object created! GTA ID: %d", attach.pObject->m_dwGTAId);
+
     attach.pObject->m_pEntity->m_bUsesCollision = false;
+
+    FLog("===== AttachObject DONE =====");
 }
 
 void CPlayerPed::SetAttachOffset(int iSlot, CVector pos, CVector rot)
