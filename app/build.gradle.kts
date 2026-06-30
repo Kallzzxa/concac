@@ -5,20 +5,6 @@ plugins {
 }
 
 android {
-    signingConfigs {
-        getByName("debug") {
-            storeFile = file("keystore_playmarket2.jks")
-            storePassword = System.getenv("STORE_PASSWORD") ?: "hayk2010"
-            keyPassword = System.getenv("KEY_PASSWORD") ?: "hayk2010"
-            keyAlias = System.getenv("KEY_ALIAS") ?: "key0"
-        }
-        create("release") {
-            storeFile = file("keystore_playmarket2.jks")
-            storePassword = System.getenv("STORE_PASSWORD") ?: "hayk2010"
-            keyPassword = System.getenv("KEY_PASSWORD") ?: "hayk2010"
-            keyAlias = System.getenv("KEY_ALIAS") ?: "key0"
-        }
-    }
     namespace = "com.rstarx.hexrays"
     //noinspection GradleDependency
     compileSdk = 34
@@ -32,17 +18,7 @@ android {
 
         multiDexEnabled = true
 
-        /*ndk {
-            abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a"))
-        }*/
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        /*externalNativeBuild {
-            cmake {
-                cppFlags += "-std=c++11"
-            }
-        }*/
     }
 
     splits {
@@ -59,9 +35,9 @@ android {
             isDebuggable = false
             isJniDebuggable = false
             isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("release")
 
-            // Debug: Use default symbol visibility for native builds
+            // Sử dụng mặc định của Android, không ép dùng cấu hình release nữa
+
             externalNativeBuild {
                 cmake {
                     cppFlags += "-fvisibility=default"
@@ -78,9 +54,9 @@ android {
             isDebuggable = false
             isJniDebuggable = false
             isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("release")
 
-            // Release: Hide native symbols to reduce binary size and surface
+            // Đã gỡ bỏ cấu hình ký cứng để tránh lỗi tìm file jks
+
             externalNativeBuild {
                 cmake {
                     cppFlags += "-fvisibility=hidden"
@@ -102,7 +78,6 @@ android {
     externalNativeBuild {
         cmake {
             path = file("src/main/cpp/CMakeLists.txt")
-            //version = "3.22.1"
         }
     }
 
