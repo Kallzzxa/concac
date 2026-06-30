@@ -2395,6 +2395,7 @@ void CPlayerPed::FlushAttach()
 
 void CPlayerPed::ProcessAttach()
 {
+	FLog("ProcessAttach running");
     if(!m_pPed) return;
     bool needRender = true;
 
