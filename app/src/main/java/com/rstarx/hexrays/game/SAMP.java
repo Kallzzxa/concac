@@ -1,3 +1,4 @@
+
 package com.rstarx.hexrays.game;
 
 import android.annotation.SuppressLint;
@@ -15,10 +16,10 @@ import com.rstarx.hexrays.game.ui.LoadingScreen;
 import androidx.activity.OnBackPressedCallback;
 import com.rstarx.hexrays.game.ui.dialog.DialogManager;
 import com.rstarx.hexrays.launcher.util.SharedPreferenceCore;
-import com.rstarx.hexrays.launcher.util.SignatureChecker;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+
 @Obfuscate
 public class SAMP extends GTASA implements CustomKeyboard.InputListener, HeightProvider.HeightListener {
     private static final String TAG = "SAMP";
@@ -173,11 +174,7 @@ public class SAMP extends GTASA implements CustomKeyboard.InputListener, HeightP
         Log.i(TAG, "**** onCreate");
         super.onCreate(savedInstanceState);
 
-        if(!SignatureChecker.isSignatureValid(this, getPackageName()))
-        {
-            Toast.makeText(this, "Use original launcher! No remake", Toast.LENGTH_LONG).show();
-            return;
-        }
+        // ĐÃ XÓA BLOCK KIỂM TRA CHỮ KÝ GỐC (SIGNATURE CHECKER) TẠI ĐÂY
 
         //mHeightProvider = new HeightProvider(this);
 
