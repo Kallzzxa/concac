@@ -6,19 +6,20 @@ plugins {
 
 android {
     signingConfigs {
-        getByName("debug") {
-            storeFile = file("D:\\gtareversed\\keystore_playmarket2.jks")
-            storePassword = "hayk2010"
-            keyPassword = "hayk2010"
-            keyAlias = "key0"
-        }
-        create("release") {
-            storeFile = file("D:\\gtareversed\\keystore_playmarket2.jks")
-            keyAlias = "key0"
-            storePassword = "hayk2010"
-            keyPassword = "hayk2010"
-        }
+    getByName("debug") {
+        storeFile = file("keystore_playmarket2.jks")
+        storePassword = System.getenv("STORE_PASSWORD") ?: "hayk2010"
+        keyAlias = System.getenv("KEY_ALIAS") ?: "key0"
+        keyPassword = System.getenv("KEY_PASSWORD") ?: "hayk2010"
     }
+
+    create("release") {
+        storeFile = file("keystore_playmarket2.jks")
+        storePassword = System.getenv("STORE_PASSWORD") ?: "hayk2010"
+        keyAlias = System.getenv("KEY_ALIAS") ?: "key0"
+        keyPassword = System.getenv("KEY_PASSWORD") ?: "hayk2010"
+    }
+}
     namespace = "com.rstarx.hexrays"
     //noinspection GradleDependency
     compileSdk = 34
