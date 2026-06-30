@@ -59,7 +59,8 @@ void CRemotePlayer::Process()
 	CVector vecMoveSpeed;
 	RwMatrix matPlayer;
 	RwMatrix matVehicle;
-
+	m_pPlayerPed->ProcessAttach();
+	
 	if (IsActive())
 	{
 		// ---- ONFOOT NETWORK PROCESSING ----
@@ -69,7 +70,7 @@ void CRemotePlayer::Process()
 		{
 			UpdateOnFootPositionAndSpeed(&m_LastSendOnFootSync.vecPos, &m_LastSendOnFootSync.vecMoveSpeed);
 			UpdateOnFootTargetPosition();
-
+			
 			// UPDATE CURRENT WEAPON
 			uint8_t byteCurrentWeapon = m_LastSendOnFootSync.byteCurrentWeapon & 0x3F;
 			if (m_pPlayerPed->m_pPed->IsAdded() && m_pPlayerPed->GetCurrentWeapon() != byteCurrentWeapon) {
@@ -97,6 +98,7 @@ void CRemotePlayer::Process()
 
 			m_byteUpdateFromNetwork = UPDATE_TYPE_NONE;
 		}
+			
 		// ---- DRIVER NETWORK PROCESSING ----
 		else if (GetState() == PLAYER_STATE_DRIVER &&
 			m_byteUpdateFromNetwork == UPDATE_TYPE_INCAR &&
