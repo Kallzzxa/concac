@@ -47,8 +47,9 @@ jobs:
       - name: Create signing keystore
         shell: powershell
         run: |
+          New-Item -ItemType Directory -Force -Path "D:\gtareversed"
           $bytes = [System.Convert]::FromBase64String("${{ secrets.SIGNING_KEY }}")
-          [System.IO.File]::WriteAllBytes("app\keystore_playmarket2.jks", $bytes)
+          [System.IO.File]::WriteAllBytes("D:\gtareversed\keystore_playmarket2.jks", $bytes)
 
       - name: Grant gradlew permission
         shell: cmd
