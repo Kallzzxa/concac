@@ -29,14 +29,14 @@ import androidx.core.content.FileProvider;
 import com.joom.paranoid.Obfuscate;
 import com.rstarx.hexrays.R;
 import com.rstarx.hexrays.launcher.config.Config;
-import com.rstarx.hexrays.launcher.util.SignatureChecker;
 
 import java.io.File;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
+
 @Obfuscate
-public class UpdateActivity extends AppCompatActivity{
+public class UpdateActivity extends AppCompatActivity {
     public Messenger mMessenger = new Messenger(new IncomingHandler());
     public Messenger mService;
     boolean isBind = false;
@@ -114,7 +114,7 @@ public class UpdateActivity extends AppCompatActivity{
                     progressBar.setIndeterminate(false);
                     progressBar.setMax((int) (j)/1048576);
                     progressBar.setProgress((int) (j2)/1048576);
-                }else if (!mIsStartingUpdate) {
+                } else if (!mIsStartingUpdate) {
                     Message obtain2 = Message.obtain((Handler) null, 1);
                     obtain2.replyTo = UpdateActivity.this.mMessenger;
                     try {
@@ -124,12 +124,9 @@ public class UpdateActivity extends AppCompatActivity{
                     }
                     mIsStartingUpdate = true;
                 }
-            }
-            else if(msg.what == 2)
-            {
+            } else if (msg.what == 2) {
                 Intent intent;
                 Log.d("x1y2z", "UpdateService.UPDATE_GAME_DATA");
-                //resetProgress(true, 100, 100);
                 if (msg.getData().getBoolean("status", false)) {
                     String string3 = msg.getData().getString("apkPath", "");
                     if (string3.length() > 0) {
@@ -144,8 +141,7 @@ public class UpdateActivity extends AppCompatActivity{
                         requestInstallGame();
                     }
                 }
-            }
-            else if (msg.what == 1) {
+            } else if (msg.what == 1) {
                 Log.i("UpdateActivity", "UpdateService.UPDATE_GAME");
                 ((TextView)findViewById(R.id.installation_text)).setText("Installation...");
                 ProgressBar progressBar = (ProgressBar) UpdateActivity.this.findViewById(R.id.download_progress);
@@ -156,8 +152,7 @@ public class UpdateActivity extends AppCompatActivity{
         }
     }
 
-    void requestInstallGame()
-    {
+    void requestInstallGame() {
         Log.d("x1y2z", "request install game");
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -169,15 +164,14 @@ public class UpdateActivity extends AppCompatActivity{
             intent.setDataAndType(uri, "application/vnd.android.package-archive");
             startActivity(intent);
 
-        } else if(Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             Uri apkUri = Uri.fromFile(mGameApk);
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setDataAndType(apkUri,
                     "application/vnd.android.package-archive");
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
-        }
-        else {
+        } else {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -206,11 +200,7 @@ public class UpdateActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update);
 
-        if(!SignatureChecker.isSignatureValid(this, getPackageName()))
-        {
-            Toast.makeText(this, "Use original launcher! No remake", Toast.LENGTH_LONG).show();
-            return;
-        }
+        // ĐÃ XÓA BLOCK KIỂM TRA CHỮ KÝ GỐC TẠI ĐÂY ĐỂ TRÁNH BỊ CHẶN HOẶC HIỂN THỊ TOAST
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -254,64 +244,3 @@ public class UpdateActivity extends AppCompatActivity{
             }
 
             @Override
-            public void onSurfaceChanged(GL10 gl10, int i, int i1) {
-
-            }
-
-            @Override
-            public void onDrawFrame(GL10 gl10) {
-
-            }
-        };
-
-        ConstraintLayout gpuLayout = findViewById(R.id.gpu);
-        GLSurfaceView mGlSurfaceView = new GLSurfaceView(this);
-        mGlSurfaceView.setRenderer(mGlRenderer);
-        gpuLayout.addView(mGlSurfaceView);
-    }
-
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            mService = new Messenger(iBinder);
-
-            if (mUpdateMode == UpdateMode.GameDataUpdate) {
-                Message obtain = Message.obtain((Handler) null, 7);
-                obtain.getData().putInt("gputype", mGpuType);
-                obtain.replyTo = mMessenger;
-                try {
-                    mService.send(obtain);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-            }
-            else if (mUpdateMode == UpdateMode.GameUpdate) {
-                Message obtain = Message.obtain((Handler) null, 2);
-                obtain.getData().putInt("gputype", mGpuType);
-                obtain.replyTo = mMessenger;
-                try {
-                    mService.send(obtain);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            isBind = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            mService = null;
-            isBind = false;
-        }
-    };
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if(mIsBind) {
-            unbindService(serviceConnection);
-            mIsBind = false;
-        }
-    }
-}
