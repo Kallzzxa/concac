@@ -203,7 +203,7 @@ void CPlayerPed::RemoveFromVehicleAndPutAt(float fX, float fY, float fZ)
     m_pPed->SetPosn(p);
 
     m_pPed->UpdateRW();
-    m_pPed->UpdateRwFrame();//? ���� ��
+    m_pPed->UpdateRwFrame();//?  
 }
 
 uint8_t CPlayerPed::GetActionTrigger()
@@ -2277,7 +2277,8 @@ void CPlayerPed::SetWeaponSkill(uint32_t iWeaponType, uint16_t byteSkill)
 
 int GetInternalBoneIDFromSampID(int sampid);
 
-void CPlayerPed::AttachObject(ATTACHED_OBJECT_INFO* pInfo, int iSlot)
+// FIXED LỖI XẢY RA Ở DÒNG NÀY: Thêm từ khóa struct vào trước ATTACHED_OBJECT_INFO
+void CPlayerPed::AttachObject(struct ATTACHED_OBJECT_INFO* pInfo, int iSlot)
 {
     FLog("===== AttachObject =====");
 
