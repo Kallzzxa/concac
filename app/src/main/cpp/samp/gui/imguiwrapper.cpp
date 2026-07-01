@@ -58,26 +58,18 @@ bool ImGuiWrapper::initialize()
 	ImFontConfig fontCfg;
 	fontCfg.GlyphExtraSpacing.x = UISettings::outlineSize();
 
-	static const ImWchar ranges[] =
-    {
-        0x0020, 0x00FF, // Basic Latin + Latin Supplement
-        0x0400, 0x04FF, // Cyrillic + Cyrillic Supplement
-		0x0E00, 0x0E5B, // Thai
-        0x2DE0, 0x2DFF, // Cyrillic Extended-A
-        0xA640, 0xA69F, // Cyrillic Extended-B
-        0xF020, 0xF0FF,
-		0
-    };
-	
-    ImFont* font = nullptr;
-    if (!m_fontData.empty()) {
-        fontCfg.FontDataOwnedByAtlas = false;
-        font = io.Fonts->AddFontFromMemoryTTF((void*)m_fontData.data(), m_fontData.size(),
-            UISettings::fontSize(), &fontCfg, ranges);
-    } else {
-	    font = io.Fonts->AddFontFromFileTTF(m_fontPath.c_str(),
-		    UISettings::fontSize(), &fontCfg, ranges);
-    }
+	// Use ImGui helper to get glyph ranges that include Vietnamese
+	const ImWchar* glyph_ranges = io.Fonts->GetGlyphRangesVietnamese();
+
+	ImFont* font = nullptr;
+	if (!m_fontData.empty()) {
+		fontCfg.FontDataOwnedByAtlas = false;
+		font = io.Fonts->AddFontFromMemoryTTF((void*)m_fontData.data(), m_fontData.size(),
+			UISettings::fontSize(), &fontCfg, glyph_ranges);
+	} else {
+		font = io.Fonts->AddFontFromFileTTF(m_fontPath.c_str(),
+			UISettings::fontSize(), &fontCfg, glyph_ranges);
+	}
 
 	if (font == nullptr)
 	{
