@@ -25,11 +25,11 @@ void Chat::addChatMessage(const std::string& message, const std::string& nick, c
 
 void Chat::addInfoMessage(const std::string& format, ...)
 {
-	char tmp_buf[512];
+	char tmp_buf[1024];
 
 	va_list args;
 	va_start(args, format);
-	vsprintf(tmp_buf, format.c_str(), args);
+	vsnprintf(tmp_buf, sizeof(tmp_buf), format.c_str(), args);
 	va_end(args);
 
 	addMessage(std::string(tmp_buf), ImColor(0x00, 0xc8, 0xc8));
@@ -37,11 +37,11 @@ void Chat::addInfoMessage(const std::string& format, ...)
 
 void Chat::addDebugMessage(const std::string& format, ...)
 {
-	char tmp_buf[512];
+	char tmp_buf[1024];
 
 	va_list args;
 	va_start(args, format);
-	vsprintf(tmp_buf, format.c_str(), args);
+	vsnprintf(tmp_buf, sizeof(tmp_buf), format.c_str(), args);
 	va_end(args);
 
 	addMessage(std::string(tmp_buf), ImColor(0xbe, 0xbe, 0xbe));
