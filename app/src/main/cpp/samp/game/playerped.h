@@ -39,7 +39,7 @@ struct CAttachedPlayerObject
 };
 
 #pragma pack(push, 1)
-struct ATTACHED_OBJECT_INFO
+typedef struct ATTACHED_OBJECT_INFO
 {
     uint32_t 	dwModelId;
     uint32_t 	dwBoneId_MP;
@@ -47,7 +47,7 @@ struct ATTACHED_OBJECT_INFO
     CVector 	vecRotation;
     CVector 	vecScale;
     uint32_t 	dwColor[2];
-};
+} ATTACHED_OBJECT_INFO;
 #pragma pack(pop)
 VALIDATE_SIZE(ATTACHED_OBJECT_INFO, 52);
 
@@ -257,7 +257,7 @@ private:
 		RtQuat* quat;
 	} sCarryData[21];
 	
-
+	
 public:
 	CPedGTA*	m_pPed;
 	uint8_t		m_bytePlayerNumber;
