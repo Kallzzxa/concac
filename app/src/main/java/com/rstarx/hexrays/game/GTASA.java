@@ -39,8 +39,8 @@ public class GTASA extends WarMedia {
         System.loadLibrary("samp");
         System.loadLibrary("bass");
         System.loadLibrary("bass_ssl");
-        System.loadLibrary("libmonetloader");
         System.loadLibrary("libluajit-5.1");
+        System.loadLibrary("libmonetloader");
     }
 
     public static void staticEnterSocialClub()
