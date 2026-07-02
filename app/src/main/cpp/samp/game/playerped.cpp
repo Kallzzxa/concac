@@ -1580,49 +1580,47 @@ void CPlayerPed::ResetCrouch()
 
 bool CPlayerPed::IsInJetpackMode()
 {
-	/*if(m_pPed && IsAdded() && !IsInVehicle() && m_pPed->Tasks &&
-	   m_pPed->Tasks->pdwJumpJetPack)
-	{
-		return GetTaskTypeFromTask(m_pPed->Tasks->pdwJumpJetPack) == 1303;
-	}*/
+    /*if(m_pPed && IsAdded() && !IsInVehicle() && m_pPed->Tasks &&
+       m_pPed->Tasks->pdwJumpJetPack)
+    {
+        return GetTaskTypeFromTask(m_pPed->Tasks->pdwJumpJetPack) == 1303;
+    }*/
 
-    if(m_pPed && m_pPed->IsAdded() && !IsInVehicle()) {
-        return m_pPed->GetIntelligence()->GetTaskJetPack();
-    }
-    return false;
+    return ScriptCommand(&is_actor_using_jetpack, m_bytePlayerNumber);
 }
 
 void CPlayerPed::StartJetpack()
 {
-	if(!m_pPed || !GamePool_Ped_GetAt(m_dwGTAId) || IsInVehicle() || !m_pPed->IsAdded())
-		return;
+    if(!m_pPed || !GamePool_Ped_GetAt(m_dwGTAId) || IsInVehicle() || !m_pPed->IsAdded())
+        return;
 
-	CWorld::PlayerInFocus = m_bytePlayerNumber;
+    CWorld::PlayerInFocus = m_bytePlayerNumber;
 
-	// reset CTasks so the CJetPack task priority can be enforced
-	m_pPed->SetPosn(m_pPed->m_matrix->m_pos.x, m_pPed->m_matrix->m_pos.y, m_pPed->m_matrix->m_pos.z);
+    // reset CTasks so the CJetPack task priority can be enforced
+    m_pPed->SetPosn(m_pPed->m_matrix->m_pos.x, m_pPed->m_matrix->m_pos.y, m_pPed->m_matrix->m_pos.z);
 
-	// CCheat::JetpackCheat
-	(( void (*)())(g_libGTASA+(VER_x32 ? 0x2FE258+1:0x3C2A40)))();
+    // CCheat::JetpackCheat
+    (( void (*)())(g_libGTASA+(VER_x32 ? 0x2FE258+1:0x3C2A40)))();
 
-	CWorld::PlayerInFocus = 0;
+    CWorld::PlayerInFocus = 0;
 }
 
 void CPlayerPed::StopJetpack()
 {
-	if(!m_pPed || !GamePool_Ped_GetAt(m_dwGTAId) || !m_pPed->IsAdded())
-		return;
+    if(!m_pPed || !GamePool_Ped_GetAt(m_dwGTAId) || !m_pPed->IsAdded())
+        return;
 
-	if(IsInJetpackMode())
-	{
-		/*uintptr_t dwJetPackTask = reinterpret_cast<uintptr_t>(m_pPed->Tasks->pdwJumpJetPack);
+    if(IsInJetpackMode())
+    {
+        /*uintptr_t dwJetPackTask = reinterpret_cast<uintptr_t>(m_pPed->Tasks->pdwJumpJetPack);
 
-		// CTaskSimpleJetPack::~CTaskSimpleJetPack
-		(( void (*)(uintptr_t))(g_libGTASA+0x530C8C+1))(dwJetPackTask); // CTaskSimpleJetPack::~CTaskSimpleJetPack
+        // CTaskSimpleJetPack::~CTaskSimpleJetPack
+        (( void (*)(uintptr_t))(g_libGTASA+0x530C8C+1))(dwJetPackTask); // CTaskSimpleJetPack::~CTaskSimpleJetPack
 
-		m_pPed->Tasks->pdwJumpJetPack = 0;*/
-	}
+        m_pPed->Tasks->pdwJumpJetPack = 0;*/
+    }
 }
+
 
 int CPlayerPed::HasHandsUp()
 {
