@@ -317,3 +317,4 @@ const SCRIPT_COMMAND clear_mission_audio 				= { 0x040D, "i" };
 const SCRIPT_COMMAND load_mission_audio 				= { 0x03CF, "ii" };
 const SCRIPT_COMMAND play_mission_audio 				= { 0x03D1, "i" };
 const SCRIPT_COMMAND set_mission_audio_position 		= { 0x03D7, "ifff" };
+const SCRIPT_COMMAND is_actor_using_jetpack = {0x0A0C, "i"};
