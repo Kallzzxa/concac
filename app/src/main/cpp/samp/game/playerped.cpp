@@ -2393,11 +2393,10 @@ void CPlayerPed::FlushAttach()
 
 void CPlayerPed::ProcessAttach()
 {
-	FLog("ProcessAttach running");
-    if(!m_pPed) return;
-    bool needRender = true;
+    if (!m_pPed) return;
 
-    if(m_pPed->IsInVehicle() && m_pPed->pVehicle->IsRCVehicleModelID())
+    bool needRender = true;
+    if (m_pPed->IsInVehicle() && m_pPed->pVehicle->IsRCVehicleModelID())
         needRender = false;
 
     m_pPed->UpdateRpHAnim();
@@ -2406,79 +2405,100 @@ void CPlayerPed::ProcessAttach()
     {
         ProcessHeadMatrix();
     }
-    for (auto iter : m_aAttachedObject)
+
+    for (auto& iter : m_aAttachedObject)
     {
-        auto attach = iter.second;
-
+        auto& attach = iter.second;
         CObject* pObject = attach.pObject;
-        if (pObject && pObject->m_pEntity && m_pPed->IsAdded() && m_pPed->m_pRwClump)
+
+        if (!pObject || !pObject->m_pEntity)
         {
-            auto hierarchy = GetAnimHierarchyFromSkinClump(m_pPed->m_pRwClump);
-
-            int iID;
-            if (hierarchy)
-            {
-
-                iID = RpHAnimIDGetIndex(hierarchy, attach.dwBone);
-            }
-            else
-            {
-                continue;
-            }
-            if (iID == -1)
-            {
-                continue;
-            }
-            pObject->m_pEntity->Remove();
-
-            if(!needRender)
-                continue;
-
-            RwMatrix outMat;
-            memcpy(&outMat, &hierarchy->pMatrixArray[iID], sizeof(RwMatrix));
-
-            CVector vecOut;
-            ProjectMatrix(&vecOut, (CMatrix*)&outMat, &attach.vecOffset);
-
-            outMat.pos = vecOut;
-
-            CVector axis { 1.0f, 0.0f, 0.0f };
-            if (attach.vecRotation.x != 0.0f)
-            {
-                RwMatrixRotate(&outMat, &axis, attach.vecRotation.x);
-            }
-            axis.Set( 0.0f, 1.0f, 0.0f );
-            if (attach.vecRotation.y != 0.0f)
-            {
-                RwMatrixRotate(&outMat, &axis, attach.vecRotation.y);
-            }
-            axis.Set( 0.0f, 0.0f, 1.0f );
-            if (attach.vecRotation.z != 0.0f)
-            {
-                RwMatrixRotate(&outMat, &axis, attach.vecRotation.z);
-            }
-
-            RwMatrixScale(&outMat, &attach.vecScale);
-
-            constexpr float boundaryLimit = 10000.0f;
-            if (std::abs(outMat.pos.x) >= boundaryLimit ||
-                std::abs(outMat.pos.y) >= boundaryLimit ||
-                std::abs(outMat.pos.z) >= boundaryLimit)
-            {
-                continue;
-            }
-
-            pObject->m_pEntity->SetMatrix((CMatrix&)outMat); // copy to CMatrix
-
-            pObject->m_pEntity->UpdateRW();
-            pObject->m_pEntity->UpdateRwFrame();
-
-            pObject->m_pEntity->Add();
+            continue;
         }
-        else
+
+        pObject->m_pEntity->Remove();
+
+        if (!m_pPed->IsAdded() || !m_pPed->m_pRwClump || !needRender)
         {
-            pObject->m_pEntity->SetPosn(0.0f, 0.0f, 0.0f);
+            continue;
         }
+
+        auto hierarchy = GetAnimHierarchyFromSkinClump(m_pPed->m_pRwClump);
+        if (!hierarchy)
+        {
+            continue;
+        }
+
+        int iID = RpHAnimIDGetIndex(hierarchy, attach.dwBone);
+        if (iID == -1)
+        {
+            continue;
+        }
+
+        // 1. Get the bone's world matrix
+        RwMatrix* boneMatrix = &hierarchy->pMatrixArray[iID];
+
+        // 2. Create the final matrix, starting with the bone's matrix
+        RwMatrix finalMatrix;
+        memcpy(&finalMatrix, boneMatrix, sizeof(RwMatrix));
+
+        // 3. Manually calculate the final position.
+        // This replaces ProjectMatrix to isolate the problem.
+        // It transforms the local offset by the bone's orientation and adds it to the bone's position.
+        CVector rotated_offset;
+        rotated_offset.x = boneMatrix->right.x * attach.vecOffset.x + boneMatrix->up.x * attach.vecOffset.y + boneMatrix->at.x * attach.vecOffset.z;
+        rotated_offset.y = boneMatrix->right.y * attach.vecOffset.x + boneMatrix->up.y * attach.vecOffset.y + boneMatrix->at.y * attach.vecOffset.z;
+        rotated_offset.z = boneMatrix->right.z * attach.vecOffset.x + boneMatrix->up.z * attach.vecOffset.y + boneMatrix->at.z * attach.vecOffset.z;
+        CVector finalPos;
+        finalPos.x = boneMatrix->pos.x + rotated_offset.x;
+        finalPos.y = boneMatrix->pos.y + rotated_offset.y;
+        finalPos.z = boneMatrix->pos.z + rotated_offset.z;
+
+        // 4. Apply local rotation to the bone's orientation.
+        CVector axis;
+        axis.Set(1.0f, 0.0f, 0.0f);
+        if (attach.vecRotation.x != 0.0f)
+            RwMatrixRotate(&finalMatrix, &axis, attach.vecRotation.x);
+
+        axis.Set(0.0f, 1.0f, 0.0f);
+        if (attach.vecRotation.y != 0.0f)
+            RwMatrixRotate(&finalMatrix, &axis, attach.vecRotation.y);
+
+        axis.Set(0.0f, 0.0f, 1.0f);
+        if (attach.vecRotation.z != 0.0f)
+            RwMatrixRotate(&finalMatrix, &axis, attach.vecRotation.z);
+
+        // 5. Set the correct final position calculated in step 3.
+        finalMatrix.pos = finalPos;
+
+        // 6. Apply scale manually to the basis vectors.
+        finalMatrix.right.x *= attach.vecScale.x;
+        finalMatrix.right.y *= attach.vecScale.x;
+        finalMatrix.right.z *= attach.vecScale.x;
+
+        finalMatrix.up.x *= attach.vecScale.y;
+        finalMatrix.up.y *= attach.vecScale.y;
+        finalMatrix.up.z *= attach.vecScale.y;
+
+        finalMatrix.at.x *= attach.vecScale.z;
+        finalMatrix.at.y *= attach.vecScale.z;
+        finalMatrix.at.z *= attach.vecScale.z;
+
+        // Boundary check
+        constexpr float boundaryLimit = 20000.0f;
+        if (std::abs(finalMatrix.pos.x) >= boundaryLimit ||
+            std::abs(finalMatrix.pos.y) >= boundaryLimit ||
+            std::abs(finalMatrix.pos.z) >= boundaryLimit)
+        {
+            FLog("AttachObject: model %d skipped due to boundary limit", attach.dwModelId);
+            continue;
+        }
+
+        // 7. Apply the final matrix to the object and render it
+        pObject->m_pEntity->SetMatrix((CMatrix&)finalMatrix);
+        pObject->m_pEntity->UpdateRW();
+        pObject->m_pEntity->UpdateRwFrame();
+        pObject->m_pEntity->Add();
     }
 }
 
