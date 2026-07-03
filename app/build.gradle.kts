@@ -126,7 +126,7 @@ dependencies {
     implementation(libs.firebase.crashlytics.ndk)
     implementation(libs.firebase.messaging)
 
-    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation(libs.ini4j)
     implementation(libs.glide)
     implementation(libs.lifecycle.process)
