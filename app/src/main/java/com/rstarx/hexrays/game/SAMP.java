@@ -48,6 +48,12 @@ public class SAMP extends GTASA implements CustomKeyboard.InputListener, HeightP
     }
 
     private void showLoadingScreen() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mLoadingScreen.show();
+            }
+        });
     }
 
     private void hideLoadingScreen() {
@@ -177,7 +183,6 @@ public class SAMP extends GTASA implements CustomKeyboard.InputListener, HeightP
 
                 runOnUiThread(() -> {
                     initializeSAMP(getExternalFilesDir(null).getAbsolutePath() + "/");
-                    mLoadingScreen.hide();
                 });
 
             }).start();
