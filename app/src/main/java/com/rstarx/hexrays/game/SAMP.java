@@ -1,257 +1,147 @@
-package com.rstarx.hexrays.game;
+package com.rstarx.hexrays.launcher.fragments;
 
-import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.inputmethod.InputMethodManager;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.google.firebase.crashlytics.FirebaseCrashlytics;
-import com.joom.paranoid.Obfuscate;
-import com.rstarx.hexrays.game.ui.AttachEdit;
-import com.rstarx.hexrays.game.ui.CustomKeyboard;
-import com.rstarx.hexrays.game.ui.LoadingScreen;
-import androidx.activity.OnBackPressedCallback;
-import com.rstarx.hexrays.game.ui.dialog.DialogManager;
-import com.rstarx.hexrays.launcher.util.SharedPreferenceCore;
+import androidx.fragment.app.Fragment;
 
-import java.io.UnsupportedEncodingException;
+import com.joom.paranoid.Obfuscate;
+import com.rstarx.hexrays.R;
+import com.rstarx.hexrays.game.SAMP;
+import com.rstarx.hexrays.launcher.MainActivity;
+import com.rstarx.hexrays.launcher.util.ButtonAnimator;
+
+import org.json.JSONObject;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 @Obfuscate
-public class SAMP extends GTASA implements CustomKeyboard.InputListener, HeightProvider.HeightListener {
-    private static final String TAG = "SAMP";
-    private static SAMP instance;
+public class HomeFragment extends Fragment {
 
-    private CustomKeyboard mKeyboard;
-    private DialogManager mDialog;
-    private HeightProvider mHeightProvider;
-
-    private AttachEdit mAttachEdit;
-    private LoadingScreen mLoadingScreen;
-
-    public static SAMP getInstance() {
-        return instance;
-    }
-
-    private void showTab() {
-    }
-
-    private void hideTab() {
-    }
-
-    private void setTab(int id, String name, int score, int ping) {
-    }
-
-    private void clearTab() {
-    }
-
-    private void showLoadingScreen() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mLoadingScreen.show();
-            }
-        });
-    }
-
-    private void hideLoadingScreen() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mLoadingScreen.hide();
-            }
-        });
-    }
-
-    public void setPauseState(boolean pause) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (pause) {
-                    mDialog.hideWithoutReset();
-                    mAttachEdit.hideWithoutReset();
-                } else {
-                    if (mDialog.isShow)
-                        mDialog.showWithOldContent();
-                    if (mAttachEdit.isShow)
-                        mAttachEdit.showWithoutReset();
-                }
-            }
-        });
-    }
-
-    public void exitGame() {
-        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(false);
-
-        finishAndRemoveTask();
-        System.exit(0);
-    }
-
-    public void showDialog(int dialogId, int dialogTypeId, byte[] bArr, byte[] bArr2, byte[] bArr3, byte[] bArr4) {
-        final String caption = new String(bArr, StandardCharsets.UTF_8);
-        final String content = new String(bArr2, StandardCharsets.UTF_8);
-        final String leftBtnText = new String(bArr3, StandardCharsets.UTF_8);
-        final String rightBtnText = new String(bArr4, StandardCharsets.UTF_8);
-        runOnUiThread(() -> { this.mDialog.show(dialogId, dialogTypeId, caption, content, leftBtnText, rightBtnText); });
-    }
-
-    private native void onInputEnd(byte[] str);
+    // Đường dẫn API URL của bạn (Thay bằng link thật của bạn, trả về dạng {"ip":"127.0.0.1", "port":7777})
+    private static final String API_URL = "https://your-domain.com/api.json"; 
 
     @Override
-    public void OnInputEnd(String str) {
-        byte[] toReturn = null;
-        try {
-            toReturn = str.getBytes("windows-874");
-        } catch (UnsupportedEncodingException e) {
-        }
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        try {
-            onInputEnd(toReturn);
-        } catch (UnsatisfiedLinkError e5) {
-            Log.e(TAG, e5.getMessage());
-        }
-    }
+        ((MainActivity)getActivity()).hideKeyboard(getActivity());
 
-    private void showKeyboard() {
-        runOnUiThread(new Runnable() {
+        // Cấu hình nút Youtube
+        ImageView yt_image = (ImageView) view.findViewById(R.id.youtube_logo);
+        yt_image.setOnTouchListener(new ButtonAnimator(getContext(), yt_image));
+        yt_image.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void run() {
-                Log.d("AXL", "showKeyboard()");
-                mKeyboard.ShowInputLayout();
+            public void onClick(View v) {
+                Intent link = new Intent(Intent.ACTION_VIEW, Uri.parse("https://bit.ly/x1y2z_yt"));
+                startActivity(link);
             }
         });
-    }
 
-    private void hideKeyboard() {
-        runOnUiThread(new Runnable() {
+        // Cấu hình nút Discord
+        ImageView discord_image = (ImageView) view.findViewById(R.id.discord_logo);
+        discord_image.setOnTouchListener(new ButtonAnimator(getContext(), discord_image));
+        discord_image.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void run() {
-                mKeyboard.HideInputLayout();
+            public void onClick(View v) {
+                Intent link = new Intent(Intent.ACTION_VIEW, Uri.parse("https://discord.gg/jvKM7HR3Dc"));
+                startActivity(link);
             }
         });
-    }
 
-    private void showEditObject() {
-        runOnUiThread(new Runnable() {
+        // Cấu hình nút Website
+        ImageView internet_logo = (ImageView) view.findViewById(R.id.internet_button);
+        internet_logo.setOnTouchListener(new ButtonAnimator(getContext(), internet_logo));
+        internet_logo.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void run() {
-                mAttachEdit.show();
+            public void onClick(View view) {
+                Intent link = new Intent(Intent.ACTION_VIEW, Uri.parse("https://samp-mobile.shop"));
+                startActivity(link);
             }
         });
-    }
 
-    private void hideEditObject() {
-        runOnUiThread(new Runnable() {
+        // Cấu hình nút THAM GIA GAME kết nối Online API
+        Button btnJoinGame = (Button) view.findViewById(R.id.btn_join_game);
+        btnJoinGame.setOnTouchListener(new ButtonAnimator(getContext(), btnJoinGame));
+        btnJoinGame.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void run() {
-                mAttachEdit.hide();
-            }
-        });
-    }
+            public void onClick(View v) {
+                // Khởi chạy một luồng phụ (Thread) để tải dữ liệu từ internet, tránh đơ màn hình chính
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String fetchedIp = "127.0.0.1"; // Giá trị dự phòng nếu lỗi mạng
+                        int fetchedPort = 7777;
+                        boolean success = false;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        Log.i(TAG, "**** onCreate");
-        super.onCreate(savedInstanceState);
+                        try {
+                            URL url = new URL(API_URL);
+                            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                            connection.setRequestMethod("GET");
+                            connection.setConnectTimeout(5000); // Giới hạn thời gian kết nối 5s
+                            connection.setReadTimeout(5000);
 
-        mKeyboard = new CustomKeyboard(this);
-        mDialog = new DialogManager(this);
-        mAttachEdit = new AttachEdit(this);
-        mLoadingScreen = new LoadingScreen(this);
-        instance = this;
+                            int responseCode = connection.getResponseCode();
+                            if (responseCode == HttpURLConnection.HTTP_OK) {
+                                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
+                                StringBuilder response = new StringBuilder();
+                                String inputLine;
 
-        try {
-            initAssetManager(getAssets());
+                                while ((inputLine = in.readLine()) != null) {
+                                    response.append(inputLine);
+                                }
+                                in.close();
 
-            runOnUiThread(() -> mLoadingScreen.setProgress(0));
+                                // Phân tích dữ liệu JSON nhận được từ Server
+                                JSONObject jsonObject = new JSONObject(response.toString());
+                                if (jsonObject.has("ip")) {
+                                    fetchedIp = jsonObject.getString("ip");
+                                }
+                                if (jsonObject.has("port")) {
+                                    fetchedPort = jsonObject.getInt("port");
+                                }
+                                success = true;
+                            }
+                            connection.disconnect();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
 
-            new Thread(() -> {
-                for (int i = 0; i <= 100; i++) {
-                    final int currentProgress = i;
+                        // Quay trở lại Main UI Thread để chuyển màn hình sang Game hoặc thông báo lỗi
+                        final String finalIp = fetchedIp;
+                        final int finalPort = fetchedPort;
+                        final boolean isSuccess = success;
 
-                    runOnUiThread(() -> {
-                        mLoadingScreen.setProgress(currentProgress);
-                    });
-
-                    try {
-                        Thread.sleep(30);
-                    } catch (InterruptedException ignored) {
+                        if (getActivity() != null) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (isSuccess) {
+                                        Intent intent = new Intent(getActivity(), SAMP.class);
+                                        intent.putExtra("ip", finalIp);
+                                        intent.putExtra("port", finalPort);
+                                        startActivity(intent);
+                                    } else {
+                                        Toast.makeText(getContext(), "Lỗi kết nối máy chủ API! Vui lòng thử lại.", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+                        }
                     }
-                }
-
-                runOnUiThread(() -> {
-                    initializeSAMP(getExternalFilesDir(null).getAbsolutePath() + "/");
-                });
-
-            }).start();
-        } catch (UnsatisfiedLinkError e5) {
-            Log.e(TAG, e5.getMessage());
-        }
-
-        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                setEnabled(false);
-                getOnBackPressedDispatcher().onBackPressed();
-                onEventBackPressed();
-                setEnabled(true);
+                }).start();
             }
         });
-    }
 
-    private native void initializeSAMP(String storagePath);
-    public native void initAssetManager(android.content.res.AssetManager assetManager);
-
-    @Override
-    public void onStart() {
-        Log.i(TAG, "**** onStart");
-        super.onStart();
-    }
-
-    @Override
-    public void onRestart() {
-        Log.i(TAG, "**** onRestart");
-        super.onRestart();
-    }
-
-    @Override
-    public void onResume() {
-        Log.i(TAG, "**** onResume");
-        super.onResume();
-    }
-
-    public native void onEventBackPressed();
-
-    @SuppressLint("GestureBackNavigation")
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            onEventBackPressed();
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public void onPause() {
-        Log.i(TAG, "**** onPause");
-        super.onPause();
-    }
-
-    @Override
-    public void onStop() {
-        Log.i(TAG, "**** onStop");
-        super.onStop();
-    }
-
-    @Override
-    public void onDestroy() {
-        Log.i(TAG, "**** onDestroy");
-        super.onDestroy();
-    }
-
-    @Override
-    public void onHeightChanged(int orientation, int height) {
+        return view;
     }
 }
