@@ -8,19 +8,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
@@ -28,16 +23,13 @@ import androidx.fragment.app.Fragment;
 import com.joom.paranoid.Obfuscate;
 import com.rstarx.hexrays.R;
 import com.rstarx.hexrays.launcher.MainActivity;
-import com.rstarx.hexrays.launcher.SplashActivity;
-import com.rstarx.hexrays.launcher.util.ButtonAnimator;
 import com.rstarx.hexrays.launcher.util.SharedPreferenceCore;
-import com.rstarx.hexrays.launcher.util.Util;
 
-import org.ini4j.InvalidFileFormatException;
 import org.ini4j.Wini;
 
 import java.io.File;
 import java.io.IOException;
+
 @Obfuscate
 public class SettingsFragment extends Fragment {
 
@@ -51,19 +43,22 @@ public class SettingsFragment extends Fragment {
     TextView mMessagesText;
     SeekBar mFPSSeekBar;
     TextView mFPSText;
+    ImageView mBtnBackToHome; // Thêm biến ánh xạ nút thoát
 
-    String[] titles = {"0.3.7", "0.3.7-R1", "0.3.7-R3","0.3.7-R4","0.3.7-R5"};
+    String[] titles = {"0.3.7", "0.3.7-R1", "0.3.7-R3", "0.3.7-R4", "0.3.7-R5"};
 
     Spinner autoCompleteTextView;
     ArrayAdapter<String> adapter;
-
 
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewGroup, Bundle bundle) {
         View view = layoutInflater.inflate(R.layout.fragment_settings, viewGroup, false);
 
-        ((MainActivity)getActivity()).hideKeyboard(getActivity());
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).hideKeyboard(getActivity());
+        }
 
+        // Ánh xạ các thành phần giao diện
         mNickName = view.findViewById(R.id.settings_nickname);
         autoCompleteTextView = view.findViewById(R.id.spinner);
         mKeyboardSwitch = view.findViewById(R.id.keyboard_switch);
@@ -74,6 +69,16 @@ public class SettingsFragment extends Fragment {
         mMessagesText = view.findViewById(R.id.messages_count);
         mFPSSeekBar = view.findViewById(R.id.fps_seekbar);
         mFPSText = view.findViewById(R.id.fps_count);
+        mBtnBackToHome = view.findViewById(R.id.btn_back_to_home); // Ánh xạ nút thoát từ XML
+
+        // Xử lý sự kiện click nút thoát quay về tab Home nhanh
+        if (mBtnBackToHome != null) {
+            mBtnBackToHome.setOnClickListener(v -> {
+                if (getActivity() instanceof MainActivity) {
+                    ((MainActivity) getActivity()).changeTab(0);
+                }
+            });
+        }
 
         adapter = new ArrayAdapter<String>(getActivity(), androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, titles);
         adapter.setDropDownViewResource(androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
@@ -98,9 +103,9 @@ public class SettingsFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 new SharedPreferenceCore().setInt(requireContext().getApplicationContext(), "VERSION", position);
                 File file = new File(getActivity().getExternalFilesDir(null) + "/SAMP/settings.ini");
-                if(file.exists()) {
+                if (file.exists()) {
                     try {
-                        if(mWini != null) {
+                        if (mWini != null) {
                             mWini.put("client", "version", titles[new SharedPreferenceCore().getInt(requireContext().getApplicationContext(), "VERSION")]);
                             mWini.store();
                         }
@@ -111,9 +116,7 @@ public class SettingsFragment extends Fragment {
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
+            public void onNothingSelected(AdapterView<?> parent) {}
         });
 
         mNickName.addTextChangedListener(new TextWatcher() {
@@ -125,18 +128,16 @@ public class SettingsFragment extends Fragment {
                 String text = charSequence.toString();
                 File file = new File(getActivity().getExternalFilesDir(null) + "/SAMP/settings.ini");
                 
-                // สร้างโฟลเดอร์และไฟล์หากยังไม่มี
                 try {
                     if (!file.getParentFile().exists()) {
                         file.getParentFile().mkdirs();
                     }
                     if (!file.exists()) {
                         file.createNewFile();
-                        // ถ้าสร้างไฟล์ใหม่ ต้อง re-init mWini
                         mWini = new Wini(file);
                     }
                     
-                    if(mWini == null) {
+                    if (mWini == null) {
                         mWini = new Wini(file);
                     }
                     
@@ -163,7 +164,7 @@ public class SettingsFragment extends Fragment {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 new SharedPreferenceCore().setBoolean(requireContext().getApplicationContext(), "ANDROID_KEYBOARD", b);
                 try {
-                    if(mWini != null) {
+                    if (mWini != null) {
                         mWini.put("gui", "androidkeyboard", b);
                         mWini.store();
                     }
@@ -178,7 +179,7 @@ public class SettingsFragment extends Fragment {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 new SharedPreferenceCore().setBoolean(requireContext().getApplicationContext(), "VOICE_CHAT", b);
                 try {
-                    if(mWini != null) {
+                    if (mWini != null) {
                         mWini.put("gui", "VoiceChatEnable", b);
                         mWini.store();
                     }
@@ -193,7 +194,7 @@ public class SettingsFragment extends Fragment {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 new SharedPreferenceCore().setBoolean(requireContext().getApplicationContext(), "FPS_DISPLAY", b);
                 try {
-                    if(mWini != null) {
+                    if (mWini != null) {
                         mWini.put("gui", "fps", b ? 1 : 0);
                         mWini.store();
                     }
@@ -203,34 +204,20 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-        // perform seek bar change listener event used for getting the progress value
         mMessagesSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 int realProgress = 0;
-                switch(progress)
-                {
-                    case 0: {
-                        realProgress = 6;
-                        break;
-                    }
-                    case 1: {
-                        realProgress = 9;
-                        break;
-                    }
-                    case 2: {
-                        realProgress = 12;
-                        break;
-                    }
-                    case 3:{
-                        realProgress = 15;
-                        break;
-                    }
+                switch (progress) {
+                    case 0: realProgress = 6; break;
+                    case 1: realProgress = 9; break;
+                    case 2: realProgress = 12; break;
+                    case 3: realProgress = 15; break;
                 }
                 new SharedPreferenceCore().setInt(requireContext().getApplicationContext(), "MESSAGE_COUNT", realProgress);
                 File file = new File(getActivity().getExternalFilesDir(null) + "/SAMP/settings.ini");
-                if(file.exists()) {
+                if (file.exists()) {
                     try {
-                        if(mWini != null) {
+                        if (mWini != null) {
                             mWini.put("gui", "ChatMaxMessages", realProgress);
                             mWini.store();
                         }
@@ -241,42 +228,24 @@ public class SettingsFragment extends Fragment {
                 mMessagesText.setText(String.valueOf(realProgress));
             }
 
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                // TODO Auto-generated method stub
-            }
-
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+            public void onStopTrackingTouch(SeekBar seekBar) {}
         });
 
-        // perform seek bar change listener event used for getting the progress value
         mFPSSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 int realProgress = 0;
-                switch(progress)
-                {
-                    case 0: {
-                        realProgress = 30;
-                        break;
-                    }
-                    case 1: {
-                        realProgress = 60;
-                        break;
-                    }
-                    case 2: {
-                        realProgress = 90;
-                        break;
-                    }
-                    case 3:{
-                        realProgress = 120;
-                        break;
-                    }
+                switch (progress) {
+                    case 0: realProgress = 30; break;
+                    case 1: realProgress = 60; break;
+                    case 2: realProgress = 90; break;
+                    case 3: realProgress = 120; break;
                 }
                 new SharedPreferenceCore().setInt(requireContext().getApplicationContext(), "FPS_LIMIT", realProgress);
                 File file = new File(getActivity().getExternalFilesDir(null) + "/SAMP/settings.ini");
-                if(file.exists()) {
+                if (file.exists()) {
                     try {
-                        if(mWini != null) {
+                        if (mWini != null) {
                             mWini.put("gui", "FPSLimit", realProgress);
                             mWini.store();
                         }
@@ -287,14 +256,9 @@ public class SettingsFragment extends Fragment {
                 mFPSText.setText(String.valueOf(realProgress));
             }
 
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                // TODO Auto-generated method stub
-            }
-
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+            public void onStopTrackingTouch(SeekBar seekBar) {}
         });
-
 
         return view;
     }
@@ -310,8 +274,7 @@ public class SettingsFragment extends Fragment {
         autoCompleteTextView.setSelection(new SharedPreferenceCore().getInt(requireContext().getApplicationContext(), "VERSION"));
 
         int fps = new SharedPreferenceCore().getInt(getContext(), "FPS_LIMIT");
-        switch (fps)
-        {
+        switch (fps) {
             case 30: mFPSSeekBar.setProgress(0); break;
             case 60: mFPSSeekBar.setProgress(1); break;
             case 90: mFPSSeekBar.setProgress(2); break;
@@ -320,8 +283,7 @@ public class SettingsFragment extends Fragment {
         mFPSText.setText(String.valueOf(fps));
 
         int message = new SharedPreferenceCore().getInt(getContext(), "MESSAGE_COUNT");
-        switch (message)
-        {
+        switch (message) {
             case 6: mMessagesSeekBar.setProgress(0); break;
             case 9: mMessagesSeekBar.setProgress(1); break;
             case 12: mMessagesSeekBar.setProgress(2); break;
