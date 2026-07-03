@@ -1,38 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout 
+<LinearLayout 
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginHorizontal="12dp"
     android:layout_marginVertical="6dp"
-    android:background="#262626"
-    android:padding="14dp">
+    android:background="#222222"
+    android:orientation="horizontal"
+    android:padding="14dp"
+    android:weightSum="1">
 
     <TextView
         android:id="@+id/tv_server_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_weight="0.75"
         android:fontFamily="@font/montserrat_bold"
-        android:text="Server Name"
+        android:text="GTA ONLINE | PC/Mobile"
         android:textColor="#FFFFFF"
-        android:textSize="15sp"
+        android:textSize="14sp"
         android:ellipsize="end"
-        android:maxLines="1"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/tv_online_count"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:maxLines="1" />
 
     <TextView
         android:id="@+id/tv_online_count"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_weight="0.25"
         android:fontFamily="@font/montserrat_bold"
+        android:gravity="end"
         android:text="0/500"
         android:textColor="#00FF66"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:textSize="14sp" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>
