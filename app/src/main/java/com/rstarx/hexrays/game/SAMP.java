@@ -190,8 +190,27 @@ public class SAMP extends GTASA implements CustomKeyboard.InputListener, HeightP
 
         try {
             initAssetManager(getAssets());
-            initAssetManager(getAssets());
-            initializeSAMP(getExternalFilesDir(null).getAbsolutePath() + "/");
+initAssetManager(getAssets());
+
+mLoadingScreen.setProgress(0);
+
+new Thread(() -> {
+
+    for (int i = 0; i <= 100; i++) {
+        mLoadingScreen.setProgress(i);
+
+        try {
+            Thread.sleep(30);
+        } catch (InterruptedException ignored) {
+        }
+    }
+
+    runOnUiThread(() -> {
+    initializeSAMP(getExternalFilesDir(null).getAbsolutePath() + "/");
+    mLoadingScreen.hide();
+});
+
+}).start();
         } catch (UnsatisfiedLinkError e5) {
             Log.e(TAG, e5.getMessage());
         }
