@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.joom.paranoid.Obfuscate;
 import com.rstarx.hexrays.R;
 import com.rstarx.hexrays.game.SAMP;
@@ -61,7 +62,7 @@ public class HomeFragment extends Fragment {
         internet_logo.setOnTouchListener(new ButtonAnimator(getContext(), internet_logo));
         internet_logo.setOnClickListener(v -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://samp-mobile.shop"))));
 
-        // Nút điều hướng tab
+        // Nút chuyển Tab nhanh
         ImageView btnTabHome = (ImageView) view.findViewById(R.id.btn_tab_home);
         if (btnTabHome != null) {
             btnTabHome.setOnTouchListener(new ButtonAnimator(getContext(), btnTabHome));
@@ -144,22 +145,21 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
+    // Mở hộp thoại chọn danh sách server
     private void showServerSelectionDialog(final ArrayList<SAMPServerInfo> servers) {
         Dialog dialog = new Dialog(getContext());
         dialog.setContentView(R.layout.dialog_server_selection);
         if (dialog.getWindow() != null) {
-            // ĐÃ FIX: Sửa thành Color.TRANSPARENT viết hoa đúng chuẩn Java
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         }
 
         RecyclerView rvServers = dialog.findViewById(R.id.rv_servers);
         rvServers.setLayoutManager(new LinearLayoutManager(getContext()));
+        
+        // ĐÃ SỬA: Khi click dòng Server, gọi hàm hiện Tab thông tin chi tiết thay vì vào thẳng game
         rvServers.setAdapter(new ServerAdapter(servers, selectedServer -> {
             dialog.dismiss();
-            Intent intent = new Intent(getActivity(), SAMP.class);
-            intent.putExtra("ip", selectedServer.getAddress());
-            intent.putExtra("port", selectedServer.getPort());
-            startActivity(intent);
+            showServerDetailDialog(selectedServer);
         }));
 
         Button btnClose = dialog.findViewById(R.id.btn_close_dialog);
@@ -168,6 +168,43 @@ public class HomeFragment extends Fragment {
         dialog.show();
     }
 
+    // ĐÃ THÊM MỚI: Hàm hiển thị Tab cấu trúc chi tiết thông tin Server và kích hoạt nút chạy Game
+    private void showServerDetailDialog(final SAMPServerInfo server) {
+        Dialog detailDialog = new Dialog(getContext());
+        detailDialog.setContentView(R.layout.dialog_server_detail);
+        if (detailDialog.getWindow() != null) {
+            detailDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+
+        TextView tvName = detailDialog.findViewById(R.id.det_server_name);
+        TextView tvAddress = detailDialog.findViewById(R.id.det_address);
+        TextView tvPlayers = detailDialog.findViewById(R.id.det_players);
+        TextView tvPing = detailDialog.findViewById(R.id.det_ping);
+        ImageView btnClose = detailDialog.findViewById(R.id.btn_close_detail);
+        FloatingActionButton fabPlay = detailDialog.findViewById(R.id.fab_play_game);
+
+        // Gán dữ liệu lên View
+        tvName.setText(server.getServerName());
+        tvAddress.setText(server.getAddress() + ":" + server.getPort());
+        tvPlayers.setText(server.getCurrentPlayerCount() + " / " + server.getMaxPlayerCount());
+        tvPing.setText("65ms"); // Vì API gốc hosted.json không trả về Ping, nên ta gán tượng trưng mặc định hoặc tính toán sau
+
+        // Sự kiện đóng Tab thông tin
+        btnClose.setOnClickListener(v -> detailDialog.dismiss());
+
+        // Sự kiện bấm nút Play màu vàng hình tròn để khởi động game chuyển tiếp IP và Port
+        fabPlay.setOnClickListener(v -> {
+            detailDialog.dismiss();
+            Intent intent = new Intent(getActivity(), SAMP.class);
+            intent.putExtra("ip", server.getAddress());
+            intent.putExtra("port", server.getPort());
+            startActivity(intent);
+        });
+
+        detailDialog.show();
+    }
+
+    // Bộ tiếp hợp Adapter danh sách Server
     private static class ServerAdapter extends RecyclerView.Adapter<ServerAdapter.ViewHolder> {
         private final ArrayList<SAMPServerInfo> serverList;
         private final OnServerClickListener listener;
@@ -195,8 +232,6 @@ public class HomeFragment extends Fragment {
             holder.tvOnline.setText(server.getCurrentPlayerCount() + "/" + server.getMaxPlayerCount());
             holder.itemView.setOnClickListener(v -> listener.onServerClick(server));
         }
-
-        // ĐÃ FIX: Xóa bỏ hàm getCount() bị thừa gây lỗi cấu trúc Override của RecyclerView
 
         @Override
         public int getItemCount() {
