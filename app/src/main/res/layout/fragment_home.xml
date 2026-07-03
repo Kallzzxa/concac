@@ -15,7 +15,6 @@
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent"/>
 
-    <!-- Logo -->
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="140dp"
@@ -26,7 +25,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/logo"/>
 
-    <!-- Server Name -->
     <TextView
         android:id="@+id/serverName"
         android:layout_width="wrap_content"
@@ -41,7 +39,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Subtitle -->
     <TextView
         android:id="@+id/subTitle"
         android:layout_width="wrap_content"
@@ -53,7 +50,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Divider -->
     <View
         android:id="@+id/divider"
         android:layout_width="220dp"
@@ -64,7 +60,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Community -->
     <TextView
         android:id="@+id/textView9"
         android:layout_width="wrap_content"
@@ -79,7 +74,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Discord -->
     <ImageView
         android:id="@+id/discord_logo"
         android:layout_width="72dp"
@@ -92,20 +86,18 @@
         app:layout_constraintEnd_toStartOf="@id/youtube_logo"
         app:srcCompat="@drawable/discord_logo"/>
 
-    <!-- Youtube -->
     <ImageView
         android:id="@+id/youtube_logo"
         android:layout_width="72dp"
         android:layout_height="72dp"
         android:layout_marginTop="40dp"
-        android:android:background="@drawable/bg_circle"
+        android:background="@drawable/bg_circle"
         android:padding="16dp"
         app:layout_constraintTop_toBottomOf="@id/textView9"
         app:layout_constraintStart_toEndOf="@id/discord_logo"
         app:layout_constraintEnd_toStartOf="@id/internet_button"
         app:srcCompat="@drawable/youtube_logo"/>
 
-    <!-- Website -->
     <ImageView
         android:id="@+id/internet_button"
         android:layout_width="72dp"
