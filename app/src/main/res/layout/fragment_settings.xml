@@ -17,7 +17,7 @@
         android:clickable="true"
         android:focusable="true"
         android:padding="6dp"
-        app:srcCompat="@androidx.appcompat.R.drawable.abc_ic_ab_back_material"
+        app:srcCompat="@android:drawable/ic_menu_revert"
         app:tint="@color/white"
         app:layout_constraintBottom_toBottomOf="@+id/textView9"
         app:layout_constraintStart_toStartOf="parent"
