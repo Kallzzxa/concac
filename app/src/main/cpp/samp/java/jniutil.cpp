@@ -36,6 +36,26 @@ CJavaWrapper::CJavaWrapper(JNIEnv *env, jobject activity)
     env->DeleteLocalRef(clas);
 }
 
+void CJavaWrapper::UpdateLoadingProgress(int progress)
+{
+    JNIEnv* p;
+    javaVM->GetEnv((void**)&p, JNI_VERSION_1_6);
+    if(p)
+    {
+        jclass clas = p->GetObjectClass(activity);
+        if(clas)
+        {
+            jmethodID method = p->GetMethodID(clas, "setLoadingProgress", "(I)V");
+            if(method)
+            {
+                p->CallVoidMethod(activity, method, progress);
+            }
+            p->DeleteLocalRef(clas);
+        }
+    }
+    EXCEPTION_CHECK(p);
+}
+
 void CJavaWrapper::ShowKeyboard()
 {
     JNIEnv* p;
