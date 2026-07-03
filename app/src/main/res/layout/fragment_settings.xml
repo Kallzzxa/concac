@@ -65,7 +65,7 @@
             android:orientation="vertical"
             android:paddingHorizontal="24dp">
 
-            <ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingVertical="12dp">
@@ -88,9 +88,9 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
-            </ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingVertical="12dp">
@@ -113,9 +113,9 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
-            </ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingVertical="12dp">
@@ -138,9 +138,9 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
-            </ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingVertical="12dp">
@@ -163,9 +163,9 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
-            </ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingVertical="12dp">
@@ -207,9 +207,9 @@
                         android:fontFamily="@font/montserrat_bold"
                         android:textSize="@dimen/_9sdp" />
                 </FrameLayout>
-            </ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingVertical="12dp">
@@ -251,9 +251,9 @@
                         android:fontFamily="@font/montserrat_bold"
                         android:textSize="@dimen/_9sdp" />
                 </FrameLayout>
-            </ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingVertical="12dp">
@@ -275,7 +275,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
-            </ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
     </ScrollView>
