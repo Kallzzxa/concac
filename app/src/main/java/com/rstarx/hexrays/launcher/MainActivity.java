@@ -90,10 +90,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void hideKeyboard(Activity activity) {
-        InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_SERVICE);
-        View currentFocusedView = activity.getCurrentFocus();
-        if (currentFocusedView != null) {
-            inputManager.hideSoftInputFromWindow(currentFocusedView.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        if (activity != null) {
+            // ĐÃ SỬA: Thay Context.INPUT_SERVICE bằng Context.INPUT_METHOD_SERVICE để tránh lỗi ép kiểu hệ thống
+            InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            View currentFocusedView = activity.getCurrentFocus();
+            if (inputManager != null && currentFocusedView != null) {
+                inputManager.hideSoftInputFromWindow(currentFocusedView.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+            }
         }
     }
 
@@ -105,7 +108,6 @@ public class MainActivity extends AppCompatActivity {
         @NonNull
         @Override
         public Fragment getItem(int position) {
-            if (position == 0) return new HomeFragment();
             if (position == 1) return new SettingsFragment();
             return new HomeFragment();
         }
