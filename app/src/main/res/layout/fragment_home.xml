@@ -1,129 +1,152 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.constraintlayout.widget.ConstraintLayout 
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:maxads="http://schemas.applovin.com/android/1.0"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#1B1B1B"
-    android:padding="24dp">
+    android:layout_height="match_parent">
+
+    <!-- ĐÃ SỬA: Đưa logo lên làm hình nền toàn màn hình, xóa bỏ nền xám đen cũ -->
+    <ImageView
+        android:id="@+id/screen_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        app:srcCompat="@drawable/logo"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/gpu"
         android:layout_width="match_parent"
         android:layout_height="16dp"
         android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="140dp"
-        android:layout_height="140dp"
-        android:layout_marginTop="20dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/logo"/>
+    <!-- ScrollView bọc nội dung chữ và nút bấm nổi lên trên hình nền -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none"
+        android:fillViewport="true">
 
-    <TextView
-        android:id="@+id/serverName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:fontFamily="@font/montserrat_bold"
-        android:text="GTA VIETNAM ONE"
-        android:textColor="#FFFFFF"
-        android:textStyle="bold"
-        android:textSize="24sp"
-        app:layout_constraintTop_toBottomOf="@id/imageView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="24dp">
 
-    <TextView
-        android:id="@+id/subTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Join our community"
-        android:textColor="#BDBDBD"
-        android:textSize="15sp"
-        app:layout_constraintTop_toBottomOf="@id/serverName"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+            <!-- ĐÃ SỬA: Đẩy chữ Server Name lên trên cùng (vì không cần cụm imageView logo cũ nữa) -->
+            <TextView
+                android:id="@+id/serverName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:fontFamily="@font/montserrat_bold"
+                android:text="GTA VIETNAM ONE"
+                android:textColor="#FFFFFF"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-    <View
-        android:id="@+id/divider"
-        android:layout_width="220dp"
-        android:layout_height="3dp"
-        android:layout_marginTop="24dp"
-        android:background="#FF0037"
-        app:layout_constraintTop_toBottomOf="@id/subTitle"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+            <TextView
+                android:id="@+id/subTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Join our community"
+                android:textColor="#BDBDBD"
+                android:textSize="15sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/serverName" />
 
-    <TextView
-        android:id="@+id/textView9"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
-        android:fontFamily="@font/montserrat_bold"
-        android:text="OUR COMMUNITY"
-        android:textAllCaps="true"
-        android:textColor="#FFFFFF"
-        android:textSize="20sp"
-        app:layout_constraintTop_toBottomOf="@id/divider"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+            <View
+                android:id="@+id/divider"
+                android:layout_width="220dp"
+                android:layout_height="3dp"
+                android:layout_marginTop="16dp"
+                android:background="#FF0037"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/subTitle" />
 
-    <ImageView
-        android:id="@+id/discord_logo"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
-        android:layout_marginTop="40dp"
-        android:background="@drawable/bg_circle"
-        android:padding="16dp"
-        app:layout_constraintTop_toBottomOf="@id/textView9"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/youtube_logo"
-        app:srcCompat="@drawable/discord_logo"/>
+            <TextView
+                android:id="@+id/textView9"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/montserrat_bold"
+                android:text="OUR COMMUNITY"
+                android:textAllCaps="true"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/divider" />
 
-    <ImageView
-        android:id="@+id/youtube_logo"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
-        android:layout_marginTop="40dp"
-        android:background="@drawable/bg_circle"
-        android:padding="16dp"
-        app:layout_constraintTop_toBottomOf="@id/textView9"
-        app:layout_constraintStart_toEndOf="@id/discord_logo"
-        app:layout_constraintEnd_toStartOf="@id/internet_button"
-        app:srcCompat="@drawable/youtube_logo"/>
+            <!-- Các nút mạng xã hội xếp hàng ngang gọn gàng -->
+            <ImageView
+                android:id="@+id/discord_logo"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/bg_circle"
+                android:padding="12dp"
+                app:layout_constraintEnd_toStartOf="@id/youtube_logo"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textView9"
+                app:srcCompat="@drawable/discord_logo" />
 
-    <ImageView
-        android:id="@+id/internet_button"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
-        android:layout_marginTop="40dp"
-        android:background="@drawable/bg_circle"
-        android:padding="16dp"
-        app:layout_constraintTop_toBottomOf="@id/textView9"
-        app:layout_constraintStart_toEndOf="@id/youtube_logo"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/internet"/>
+            <ImageView
+                android:id="@+id/youtube_logo"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginHorizontal="24dp"
+                android:background="@drawable/bg_circle"
+                android:padding="12dp"
+                app:layout_constraintEnd_toStartOf="@id/internet_button"
+                app:layout_constraintStart_toEndOf="@id/discord_logo"
+                app:layout_constraintTop_toBottomOf="@id/textView9"
+                app:srcCompat="@drawable/youtube_logo" />
 
-    <Button
-        android:id="@+id/btn_join_game"
-        android:layout_width="0dp"
-        android:layout_height="55dp"
-        android:layout_marginTop="40dp"
-        android:backgroundTint="#FF0037"
-        android:text="THAM GIA GAME"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:fontFamily="@font/montserrat_bold"
-        app:layout_constraintWidth_percent="0.85"
-        app:layout_constraintTop_toBottomOf="@id/youtube_logo"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+            <ImageView
+                android:id="@+id/internet_button"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/bg_circle"
+                android:padding="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/youtube_logo"
+                app:layout_constraintTop_toBottomOf="@id/textView9"
+                app:srcCompat="@drawable/internet" />
+
+            <!-- Nút Tham Gia Game to rõ ràng ở dưới cùng -->
+            <Button
+                android:id="@+id/btn_join_game"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="28dp"
+                android:layout_marginBottom="16dp"
+                android:backgroundTint="#FF0037"
+                android:fontFamily="@font/montserrat_bold"
+                android:text="THAM GIA GAME"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/youtube_logo"
+                app:layout_constraintWidth_percent="0.75" />
+
+         </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
