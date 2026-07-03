@@ -155,6 +155,8 @@ void CJavaWrapper::ShowDialog(int dialogStyle, int dialogID, char* title, char* 
 		return;
 	}
 
+	HideLoadingScreen();
+
 	std::string sTitle(title);
 	std::string sText(text);
 	std::string sButton1(button1);
