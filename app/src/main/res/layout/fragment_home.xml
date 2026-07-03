@@ -14,7 +14,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_endEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/gpu"
@@ -105,7 +105,9 @@
                     android:background="@drawable/bg_circle"
                     android:backgroundTint="#FF0037"
                     android:padding="12dp"
-                    app:srcCompat="@drawable/ic_home" /> <ImageView
+                    app:srcCompat="@drawable/ic_mainmenu" />
+
+                <ImageView
                     android:id="@+id/discord_logo"
                     android:layout_width="52dp"
                     android:layout_height="52dp"
@@ -139,7 +141,9 @@
                     android:layout_marginHorizontal="8dp"
                     android:background="@drawable/bg_circle"
                     android:padding="12dp"
-                    app:srcCompat="@drawable/ic_settings" /> </LinearLayout>
+                    app:srcCompat="@drawable/ic_settingsmenu" />
+
+            </LinearLayout>
 
             <Button
                 android:id="@+id/btn_join_game"
