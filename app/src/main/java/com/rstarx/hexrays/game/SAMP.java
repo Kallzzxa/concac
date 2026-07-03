@@ -1,4 +1,3 @@
-
 package com.rstarx.hexrays.game;
 
 import android.annotation.SuppressLint;
@@ -32,39 +31,26 @@ public class SAMP extends GTASA implements CustomKeyboard.InputListener, HeightP
     private AttachEdit mAttachEdit;
     private LoadingScreen mLoadingScreen;
 
-    //public native void sendDialogResponse(int i, int i2, int i3, byte[] str);
-
     public static SAMP getInstance() {
         return instance;
     }
 
-    private void showTab()
-    {
-
+    private void showTab() {
     }
 
-    private void hideTab()
-    {
-
+    private void hideTab() {
     }
 
-    private void setTab(int id, String name, int score, int ping)
-    {
-
+    private void setTab(int id, String name, int score, int ping) {
     }
 
-    private void clearTab()
-    {
-
+    private void clearTab() {
     }
 
-    private void showLoadingScreen()
-    {
-
+    private void showLoadingScreen() {
     }
 
-    private void hideLoadingScreen()
-    {
+    private void hideLoadingScreen() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -80,18 +66,17 @@ public class SAMP extends GTASA implements CustomKeyboard.InputListener, HeightP
                 if (pause) {
                     mDialog.hideWithoutReset();
                     mAttachEdit.hideWithoutReset();
-                }
-                else {
-                    if(mDialog.isShow)
+                } else {
+                    if (mDialog.isShow)
                         mDialog.showWithOldContent();
-                    if(mAttachEdit.isShow)
+                    if (mAttachEdit.isShow)
                         mAttachEdit.showWithoutReset();
                 }
             }
         });
     }
 
-    public void exitGame(){
+    public void exitGame() {
         FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(false);
 
         finishAndRemoveTask();
@@ -107,29 +92,23 @@ public class SAMP extends GTASA implements CustomKeyboard.InputListener, HeightP
     }
 
     private native void onInputEnd(byte[] str);
-    @Override
-    public void OnInputEnd(String str)
-    {
-        byte[] toReturn = null;
-        try
-        {
-            toReturn = str.getBytes("windows-874");
-        }
-        catch(UnsupportedEncodingException e)
-        {
 
+    @Override
+    public void OnInputEnd(String str) {
+        byte[] toReturn = null;
+        try {
+            toReturn = str.getBytes("windows-874");
+        } catch (UnsupportedEncodingException e) {
         }
 
         try {
             onInputEnd(toReturn);
-        }
-        catch (UnsatisfiedLinkError e5) {
+        } catch (UnsatisfiedLinkError e5) {
             Log.e(TAG, e5.getMessage());
         }
     }
 
-    private void showKeyboard()
-    {
+    private void showKeyboard() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -139,8 +118,7 @@ public class SAMP extends GTASA implements CustomKeyboard.InputListener, HeightP
         });
     }
 
-    private void hideKeyboard()
-    {
+    private void hideKeyboard() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -149,8 +127,7 @@ public class SAMP extends GTASA implements CustomKeyboard.InputListener, HeightP
         });
     }
 
-    private void showEditObject()
-    {
+    private void showEditObject() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -159,8 +136,7 @@ public class SAMP extends GTASA implements CustomKeyboard.InputListener, HeightP
         });
     }
 
-    private void hideEditObject()
-    {
+    private void hideEditObject() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -174,43 +150,37 @@ public class SAMP extends GTASA implements CustomKeyboard.InputListener, HeightP
         Log.i(TAG, "**** onCreate");
         super.onCreate(savedInstanceState);
 
-        // ĐÃ XÓA BLOCK KIỂM TRA CHỮ KÝ GỐC (SIGNATURE CHECKER) TẠI ĐÂY
-
-        //mHeightProvider = new HeightProvider(this);
-
         mKeyboard = new CustomKeyboard(this);
-
         mDialog = new DialogManager(this);
-
         mAttachEdit = new AttachEdit(this);
-
         mLoadingScreen = new LoadingScreen(this);
-
         instance = this;
 
         try {
             initAssetManager(getAssets());
-initAssetManager(getAssets());
 
-mLoadingScreen.setProgress(0);
+            runOnUiThread(() -> mLoadingScreen.setProgress(0));
 
-new Thread(() -> {
+            new Thread(() -> {
+                for (int i = 0; i <= 100; i++) {
+                    final int currentProgress = i;
 
-    for (int i = 0; i <= 100; i++) {
-        mLoadingScreen.setProgress(i);
+                    runOnUiThread(() -> {
+                        mLoadingScreen.setProgress(currentProgress);
+                    });
 
-        try {
-            Thread.sleep(30);
-        } catch (InterruptedException ignored) {
-        }
-    }
+                    try {
+                        Thread.sleep(30);
+                    } catch (InterruptedException ignored) {
+                    }
+                }
 
-    runOnUiThread(() -> {
-    initializeSAMP(getExternalFilesDir(null).getAbsolutePath() + "/");
-    mLoadingScreen.hide();
-});
+                runOnUiThread(() -> {
+                    initializeSAMP(getExternalFilesDir(null).getAbsolutePath() + "/");
+                    mLoadingScreen.hide();
+                });
 
-}).start();
+            }).start();
         } catch (UnsatisfiedLinkError e5) {
             Log.e(TAG, e5.getMessage());
         }
@@ -218,10 +188,8 @@ new Thread(() -> {
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                // Perform default action
                 setEnabled(false);
                 getOnBackPressedDispatcher().onBackPressed();
-                // Notify native
                 onEventBackPressed();
                 setEnabled(true);
             }
@@ -230,8 +198,6 @@ new Thread(() -> {
 
     private native void initializeSAMP(String storagePath);
     public native void initAssetManager(android.content.res.AssetManager assetManager);
-
-
 
     @Override
     public void onStart() {
@@ -249,22 +215,14 @@ new Thread(() -> {
     public void onResume() {
         Log.i(TAG, "**** onResume");
         super.onResume();
-        //mHeightProvider.init(view);
     }
 
     public native void onEventBackPressed();
 
-    //@Override
-    //public void onBackPressed() {
-    //    super.onBackPressed();
-    //    onEventBackPressed();
-    //}
-
     @SuppressLint("GestureBackNavigation")
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if(keyCode == KeyEvent.KEYCODE_BACK)
-        {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
             onEventBackPressed();
         }
         return super.onKeyDown(keyCode, event);
@@ -290,7 +248,5 @@ new Thread(() -> {
 
     @Override
     public void onHeightChanged(int orientation, int height) {
-        //mKeyboard.onHeightChanged(height);
-        //mDialog.onHeightChanged(height);
     }
 }
