@@ -40,9 +40,11 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        ((MainActivity)getActivity()).hideKeyboard(getActivity());
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).hideKeyboard(getActivity());
+        }
 
-        // Nút mạng xã hội
+        // Nút mạng xã hội cũ
         ImageView yt_image = (ImageView) view.findViewById(R.id.youtube_logo);
         yt_image.setOnTouchListener(new ButtonAnimator(getContext(), yt_image));
         yt_image.setOnClickListener(v -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://bit.ly/x1y2z_yt"))));
@@ -54,6 +56,28 @@ public class HomeFragment extends Fragment {
         ImageView internet_logo = (ImageView) view.findViewById(R.id.internet_button);
         internet_logo.setOnTouchListener(new ButtonAnimator(getContext(), internet_logo));
         internet_logo.setOnClickListener(v -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://samp-mobile.shop"))));
+
+        // ĐÃ THÊM: Xử lý sự kiện bấm nút Home (Ngôi nhà) ngay hàng ngang mới
+        ImageView btnTabHome = (ImageView) view.findViewById(R.id.btn_tab_home);
+        if (btnTabHome != null) {
+            btnTabHome.setOnTouchListener(new ButtonAnimator(getContext(), btnTabHome));
+            btnTabHome.setOnClickListener(v -> {
+                if (getActivity() instanceof MainActivity) {
+                    ((MainActivity) getActivity()).changeTab(0); // Chuyển về Tab Home (Vị trí 0)
+                }
+            });
+        }
+
+        // ĐÃ THÊM: Xử lý sự kiện bấm nút Settings (Bánh răng) ngay hàng ngang mới
+        ImageView btnTabSettings = (ImageView) view.findViewById(R.id.btn_tab_settings);
+        if (btnTabSettings != null) {
+            btnTabSettings.setOnTouchListener(new ButtonAnimator(getContext(), btnTabSettings));
+            btnTabSettings.setOnClickListener(v -> {
+                if (getActivity() instanceof MainActivity) {
+                    ((MainActivity) getActivity()).changeTab(1); // Chuyển sang Tab Settings (Vị trí 1)
+                }
+            });
+        }
 
         // Nút THAM GIA GAME
         Button btnJoinGame = (Button) view.findViewById(R.id.btn_join_game);
