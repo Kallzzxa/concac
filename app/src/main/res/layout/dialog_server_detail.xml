@@ -53,7 +53,7 @@
         android:text="sa-mp.mobile:7777"
         android:textColor="#FFCC00"
         android:textSize="14sp"
-        app:layout_baselineToBaselineOf="@id/lbl_address"
+        app:layout_constraintBaseline_toBaselineOf="@id/lbl_address"
         app:layout_constraintStart_toEndOf="@id/lbl_address" />
 
     <TextView
@@ -75,7 +75,7 @@
         android:text="57 / 500"
         android:textColor="#FFFFFF"
         android:textSize="14sp"
-        app:layout_baselineToBaselineOf="@id/lbl_players"
+        app:layout_constraintBaseline_toBaselineOf="@id/lbl_players"
         app:layout_constraintStart_toEndOf="@id/lbl_players" />
 
     <TextView
@@ -97,7 +97,7 @@
         android:text="Checking..."
         android:textColor="#00FF66"
         android:textSize="14sp"
-        app:layout_baselineToBaselineOf="@id/lbl_ping"
+        app:layout_constraintBaseline_toBaselineOf="@id/lbl_ping"
         app:layout_constraintStart_toEndOf="@id/lbl_ping" />
 
     <TextView
