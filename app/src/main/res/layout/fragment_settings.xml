@@ -281,7 +281,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:layout_gravity="center_horizontal"
-                android:text="Copyright x1y2z"
+                android:text="bản quyền GTA VIETNAM ONE"
                 android:textColor="#AEAEAE"
                 android:textSize="@dimen/_13sdp"
                 android:fontFamily="@font/montserrat_regular" />
