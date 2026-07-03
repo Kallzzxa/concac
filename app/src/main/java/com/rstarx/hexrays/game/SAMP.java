@@ -1,6 +1,8 @@
 package com.rstarx.hexrays.game;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -116,7 +118,7 @@ public class SAMP extends GTASA implements CustomKeyboard.InputListener, HeightP
     }
 
     // =========================================================================
-    // KHU VỰC ĐÃ CHỈNH SỬA LOGIC ONCREATE ĐỂ LOADING TỪ 0 - 100 CHUẨN REAL
+    // KHU VỰC SỬA LOGIC ONCREATE - SỬ DỤNG SHAREDPREFERENCES ĐỂ LƯU IP/PORT AN TOÀN
     // =========================================================================
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -139,19 +141,19 @@ public class SAMP extends GTASA implements CustomKeyboard.InputListener, HeightP
         int port = getIntent().getIntExtra("port", 7777);
 
         if (ip == null || ip.isEmpty()) {
-            ip = "127.0.0.1"; // Dự phòng
+            ip = "127.0.0.1"; // Dự phòng nếu không có dữ liệu dữ liệu truyền sang
         }
 
         try {
             initAssetManager(getAssets());
 
-            // Thiết lập giá trị Progress ban đầu của LoadingScreen về 0
+            // Đưa thanh trạng thái của LoadingScreen về 0% khi bắt đầu vào game
             runOnUiThread(() -> mLoadingScreen.setProgress(0));
 
             final String finalIp = ip;
             final int finalPort = port;
 
-            // Tạo luồng xử lý riêng chạy thanh Loading ảo tăng dần mượt mà
+            // Chạy luồng phụ đếm tiến trình mượt mà từ 0 đến 100
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -162,18 +164,21 @@ public class SAMP extends GTASA implements CustomKeyboard.InputListener, HeightP
                         runOnUiThread(() -> mLoadingScreen.setProgress(currentProgress));
 
                         try {
-                            // Tốc độ tăng tiến trình (30 mili-giây tăng 1%). Toàn bộ quá trình mất khoảng 3 giây.
                             Thread.sleep(30); 
                         } catch (InterruptedException ignored) {}
                     }
 
-                    // Khi tiến trình chạy xong 100% -> Thực hiện lưu cấu hình IP và Gọi Engine C++
+                    // Sau khi thanh loading chạy hết 100% -> Thực hiện lưu IP động và kích hoạt game
                     runOnUiThread(() -> {
                         try {
-                            // Lưu IP và Port vào SharedPreferenceCore hệ thống Launcher của bạn để Core Game nhận diện
-                            SharedPreferenceCore.setServer(finalIp, finalPort);
+                            // SỬA ĐỔI: Ghi trực tiếp thông số vào SharedPreferences mặc định của ứng dụng
+                            SharedPreferences sp = getSharedPreferences(getPackageName() + "_preferences", Context.MODE_PRIVATE);
+                            sp.edit()
+                              .putString("ip", finalIp)
+                              .putInt("port", finalPort)
+                              .apply();
                             
-                            // Gọi hàm Native để nạp Engine game
+                            // Nạp native game engine
                             initializeSAMP(getExternalFilesDir(null).getAbsolutePath() + "/");
                         } catch (Exception e) {
                             Log.e(TAG, "Lỗi khi nạp Engine Game: " + e.getMessage());
