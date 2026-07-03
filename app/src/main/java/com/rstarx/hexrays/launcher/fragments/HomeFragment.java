@@ -61,7 +61,7 @@ public class HomeFragment extends Fragment {
         internet_logo.setOnTouchListener(new ButtonAnimator(getContext(), internet_logo));
         internet_logo.setOnClickListener(v -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://samp-mobile.shop"))));
 
-        // Nút điều hướng tab nhanh
+        // Nút điều hướng tab
         ImageView btnTabHome = (ImageView) view.findViewById(R.id.btn_tab_home);
         if (btnTabHome != null) {
             btnTabHome.setOnTouchListener(new ButtonAnimator(getContext(), btnTabHome));
@@ -144,12 +144,12 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
-    // Đugợc tối ưu thiết kế hoàn toàn mới lột xác giao diện danh sách server
     private void showServerSelectionDialog(final ArrayList<SAMPServerInfo> servers) {
         Dialog dialog = new Dialog(getContext());
         dialog.setContentView(R.layout.dialog_server_selection);
         if (dialog.getWindow() != null) {
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.transparent));
+            // ĐÃ FIX: Sửa thành Color.TRANSPARENT viết hoa đúng chuẩn Java
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         }
 
         RecyclerView rvServers = dialog.findViewById(R.id.rv_servers);
@@ -168,7 +168,6 @@ public class HomeFragment extends Fragment {
         dialog.show();
     }
 
-    // Bộ tiếp hợp Adapter tối ưu danh sách hiển thị mượt mà
     private static class ServerAdapter extends RecyclerView.Adapter<ServerAdapter.ViewHolder> {
         private final ArrayList<SAMPServerInfo> serverList;
         private final OnServerClickListener listener;
@@ -197,8 +196,7 @@ public class HomeFragment extends Fragment {
             holder.itemView.setOnClickListener(v -> listener.onServerClick(server));
         }
 
-        @Override
-        public int getCount() { return 0; } // Không dùng phương thức thừa của cha cũ
+        // ĐÃ FIX: Xóa bỏ hàm getCount() bị thừa gây lỗi cấu trúc Override của RecyclerView
 
         @Override
         public int getItemCount() {
