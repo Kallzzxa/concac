@@ -18,6 +18,7 @@ public:
     
     const char* GetClipboardString();
     void SetPauseState(bool pause);
+void UpdateLoadingProgress(int progress);
     void ShowLoadingScreen();
     void HideLoadingScreen();
     void ShowTab();
