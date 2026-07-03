@@ -110,4 +110,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/internet"/>
 
+    <Button
+        android:id="@+id/btn_join_game"
+        android:layout_width="0dp"
+        android:layout_height="55dp"
+        android:layout_marginTop="40dp"
+        android:backgroundTint="#FF0037"
+        android:text="THAM GIA GAME"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:fontFamily="@font/montserrat_bold"
+        app:layout_constraintWidth_percent="0.85"
+        app:layout_constraintTop_toBottomOf="@id/youtube_logo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
