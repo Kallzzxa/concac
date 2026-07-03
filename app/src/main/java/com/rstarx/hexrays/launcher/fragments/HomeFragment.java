@@ -6,6 +6,8 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +21,10 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.joom.paranoid.Obfuscate;
 import com.rstarx.hexrays.R;
@@ -32,6 +38,8 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -40,6 +48,10 @@ import java.util.ArrayList;
 public class HomeFragment extends Fragment {
 
     private static final String HOSTED_URL = "https://samp-mobile.shop/hosted.json";
+    
+    private Handler pingHandler;
+    private Runnable pingRunnable;
+    private int xValue = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -49,7 +61,7 @@ public class HomeFragment extends Fragment {
             ((MainActivity) getActivity()).hideKeyboard(getActivity());
         }
 
-        // Nút mạng xã hội
+        // Mạng xã hội
         ImageView yt_image = (ImageView) view.findViewById(R.id.youtube_logo);
         yt_image.setOnTouchListener(new ButtonAnimator(getContext(), yt_image));
         yt_image.setOnClickListener(v -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://bit.ly/x1y2z_yt"))));
@@ -62,7 +74,7 @@ public class HomeFragment extends Fragment {
         internet_logo.setOnTouchListener(new ButtonAnimator(getContext(), internet_logo));
         internet_logo.setOnClickListener(v -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://samp-mobile.shop"))));
 
-        // Nút chuyển Tab nhanh
+        // Tab chuyển vùng nhanh
         ImageView btnTabHome = (ImageView) view.findViewById(R.id.btn_tab_home);
         if (btnTabHome != null) {
             btnTabHome.setOnTouchListener(new ButtonAnimator(getContext(), btnTabHome));
@@ -145,7 +157,7 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
-    // Mở hộp thoại chọn danh sách server
+    // Hiển thị danh sách máy chủ để chọn
     private void showServerSelectionDialog(final ArrayList<SAMPServerInfo> servers) {
         Dialog dialog = new Dialog(getContext());
         dialog.setContentView(R.layout.dialog_server_selection);
@@ -156,7 +168,7 @@ public class HomeFragment extends Fragment {
         RecyclerView rvServers = dialog.findViewById(R.id.rv_servers);
         rvServers.setLayoutManager(new LinearLayoutManager(getContext()));
         
-        // ĐÃ SỬA: Khi click dòng Server, gọi hàm hiện Tab thông tin chi tiết thay vì vào thẳng game
+        // Nhấn dòng máy chủ sẽ mở Tab xem chi tiết đồ thị
         rvServers.setAdapter(new ServerAdapter(servers, selectedServer -> {
             dialog.dismiss();
             showServerDetailDialog(selectedServer);
@@ -168,7 +180,7 @@ public class HomeFragment extends Fragment {
         dialog.show();
     }
 
-    // ĐÃ THÊM MỚI: Hàm hiển thị Tab cấu trúc chi tiết thông tin Server và kích hoạt nút chạy Game
+    // Tab xem thông tin cấu hình chi tiết & Vẽ biểu đồ xung Ping Real-time
     private void showServerDetailDialog(final SAMPServerInfo server) {
         Dialog detailDialog = new Dialog(getContext());
         detailDialog.setContentView(R.layout.dialog_server_detail);
@@ -182,18 +194,92 @@ public class HomeFragment extends Fragment {
         TextView tvPing = detailDialog.findViewById(R.id.det_ping);
         ImageView btnClose = detailDialog.findViewById(R.id.btn_close_detail);
         FloatingActionButton fabPlay = detailDialog.findViewById(R.id.fab_play_game);
+        LineChart lineChart = detailDialog.findViewById(R.id.ping_line_chart);
 
-        // Gán dữ liệu lên View
         tvName.setText(server.getServerName());
         tvAddress.setText(server.getAddress() + ":" + server.getPort());
         tvPlayers.setText(server.getCurrentPlayerCount() + " / " + server.getMaxPlayerCount());
-        tvPing.setText("65ms"); // Vì API gốc hosted.json không trả về Ping, nên ta gán tượng trưng mặc định hoặc tính toán sau
 
-        // Sự kiện đóng Tab thông tin
-        btnClose.setOnClickListener(v -> detailDialog.dismiss());
+        // Setup định dạng LineChart mẫu
+        ArrayList<Entry> entries = new ArrayList<>();
+        LineDataSet dataSet = new LineDataSet(entries, "Ping (ms)");
+        dataSet.setColor(Color.parseColor("#FFCC00"));
+        dataSet.setCircleColor(Color.parseColor("#FFCC00"));
+        dataSet.setLineWidth(2f);
+        dataSet.setCircleRadius(3f);
+        dataSet.setDrawCircleHole(false);
+        dataSet.setDrawValues(false);
+        dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
 
-        // Sự kiện bấm nút Play màu vàng hình tròn để khởi động game chuyển tiếp IP và Port
+        LineData lineData = new LineData(dataSet);
+        lineChart.setData(lineData);
+        lineChart.getXAxis().setDrawGridLines(false);
+        lineChart.getXAxis().setDrawLabels(false);
+        lineChart.getAxisLeft().setTextColor(Color.WHITE);
+        lineChart.getAxisLeft().setDrawGridLines(true);
+        lineChart.getAxisRight().setEnabled(false);
+        lineChart.getDescription().setEnabled(false);
+        lineChart.getLegend().setEnabled(false);
+        lineChart.invalidate();
+
+        // Luồng đo đạc dữ liệu Ping thực
+        xValue = 0;
+        pingHandler = new Handler(Looper.getMainLooper());
+        pingRunnable = new Runnable() {
+            @Override
+            public void run() {
+                new Thread(() -> {
+                    long pingResult;
+                    try {
+                        long startTime = System.currentTimeMillis();
+                        Socket socket = new Socket();
+                        socket.connect(new InetSocketAddress(server.getAddress(), server.getPort()), 1500);
+                        socket.close();
+                        pingResult = System.currentTimeMillis() - startTime;
+                    } catch (Exception e) {
+                        pingResult = -1;
+                    }
+
+                    final long finalPing = pingResult;
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            if (finalPing >= 0) {
+                                tvPing.setText(finalPing + " ms");
+                                tvPing.setTextColor(Color.parseColor("#00FF66"));
+                                
+                                LineData data = lineChart.getData();
+                                if (data != null) {
+                                    data.addEntry(new Entry(xValue++, finalPing), 0);
+                                    if (data.getEntryCount() > 15) {
+                                        data.removeEntry(0, 0);
+                                    }
+                                    data.notifyDataChanged();
+                                    lineChart.notifyDataSetChanged();
+                                    lineChart.moveViewToX(data.getEntryCount());
+                                }
+                            } else {
+                                tvPing.setText("Timeout");
+                                tvPing.setTextColor(Color.RED);
+                            }
+                        });
+                    }
+                }).start();
+                pingHandler.postDelayed(this, 1000);
+            }
+        };
+        pingHandler.post(pingRunnable);
+
+        // Hủy vòng lặp Ping tránh ngốn RAM khi đóng tab
+        btnClose.setOnClickListener(v -> {
+            stopPingTask();
+            detailDialog.dismiss();
+        });
+
+        detailDialog.setOnDismissListener(dialogInterface -> stopPingTask());
+
+        // Bấm nút Play chuyển tiếp IP Port kích hoạt game
         fabPlay.setOnClickListener(v -> {
+            stopPingTask();
             detailDialog.dismiss();
             Intent intent = new Intent(getActivity(), SAMP.class);
             intent.putExtra("ip", server.getAddress());
@@ -204,7 +290,13 @@ public class HomeFragment extends Fragment {
         detailDialog.show();
     }
 
-    // Bộ tiếp hợp Adapter danh sách Server
+    private void stopPingTask() {
+        if (pingHandler != null && pingRunnable != null) {
+            pingHandler.removeCallbacks(pingRunnable);
+        }
+    }
+
+    // Adapter nạp dữ liệu Server lên RecyclerView
     private static class ServerAdapter extends RecyclerView.Adapter<ServerAdapter.ViewHolder> {
         private final ArrayList<SAMPServerInfo> serverList;
         private final OnServerClickListener listener;
