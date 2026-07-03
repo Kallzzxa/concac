@@ -48,12 +48,7 @@ CNetGame::CNetGame(const char* szHostOrIp, int iPort, const char *szPlayerName, 
 {
 	FLog("CNetGame initializing..");
 
-	// voice
 	Network::OnRaknetConnect(szHostOrIp, iPort);
-
-	//MyLog2("Voice connect %s:%d", szHostOrIp, iPort);
-	//MyLog2("Voice connect %s:%d", szHostOrIp, iPort);
-	//MyLog2("Voice connect %s:%d", szHostOrIp, iPort);
 
 	m_pNetSet = new NET_SETTINGS;
 	memset(m_szHostName, 0, 256);
@@ -97,14 +92,15 @@ CNetGame::CNetGame(const char* szHostOrIp, int iPort, const char *szPlayerName, 
 	SetGameState(GAMESTATE_WAIT_CONNECT);
 	m_bLanMode = false;
 
-    pJavaWrapper->HideLoadingScreen();
+	pJavaWrapper->HideLoadingScreen();
 
-    const char* sampVer = SAMP_VERSION;
-    if(pSettings)
-        sampVer = pSettings->Get().szVersion;
+	const char* sampVer = SAMP_VERSION;
+	if(pSettings)
+		sampVer = pSettings->Get().szVersion;
 
 	if (pUI) pUI->chat()->addDebugMessage("{FFFFFF}SA-MP {B9C9BF}%s {FFFFFF}Started", sampVer);
 }
+
 
 CNetGame::~CNetGame()
 {
