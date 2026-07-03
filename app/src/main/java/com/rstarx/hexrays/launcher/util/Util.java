@@ -24,8 +24,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.rstarx.hexrays.R;
 import com.rstarx.hexrays.launcher.MainActivity;
 import com.rstarx.hexrays.launcher.config.Config;
-import com.rstarx.hexrays.launcher.fragments.ServerPagesItemFragment;
-import com.rstarx.hexrays.launcher.fragments.ServersFragment;
 
 import java.io.BufferedReader;
 import java.io.File;
