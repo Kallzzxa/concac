@@ -2,9 +2,8 @@ package com.rstarx.hexrays.game.ui;
 
 import android.app.Activity;
 import android.view.View;
-
+import android.widget.ProgressBar;
 import androidx.constraintlayout.widget.ConstraintLayout;
-
 import com.rstarx.hexrays.R;
 
 public class LoadingScreen {
@@ -28,11 +27,28 @@ public class LoadingScreen {
 
     public void setProgress(int value)
     {
-        activity.runOnUiThread(() -> progressBar.setProgress(value));
+        activity.runOnUiThread(() -> {
+            if (progressBar != null) {
+                progressBar.setProgress(value);
+            }
+        });
+    }
+
+    public void show()
+    {
+        activity.runOnUiThread(() -> {
+            if (mainLayout != null) {
+                mainLayout.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     public void hide()
     {
-        mainLayout.setVisibility(View.INVISIBLE);
+        activity.runOnUiThread(() -> {
+            if (mainLayout != null) {
+                mainLayout.setVisibility(View.INVISIBLE);
+            }
+        });
     }
 }
