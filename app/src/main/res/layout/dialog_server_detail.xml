@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp"
+    android:background="@drawable/bg_dialog_round"
+    android:padding="20dp">
+
+    <ImageView
+        android:id="@+id/btn_close_detail"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:background="@drawable/bg_circle"
+        android:backgroundTint="#2D3238"
+        android:padding="6dp"
+        app:srcCompat="@android:drawable/ic_menu_close_clear_cancel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/det_server_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/montserrat_bold"
+        android:text="GTA ONLINE | PC/Mobile"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_close_detail" />
+
+    <TextView
+        android:id="@+id/lbl_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:text="Address:"
+        android:textColor="#888888"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/det_server_name" />
+
+    <TextView
+        android:id="@+id/det_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:fontFamily="@font/montserrat_bold"
+        android:text="sa-mp.mobile:7777"
+        android:textColor="#FFCC00"
+        android:textSize="14sp"
+        app:layout_baselineToBaselineOf="@id/lbl_address"
+        app:layout_constraintStart_toEndOf="@id/lbl_address" />
+
+    <TextView
+        android:id="@+id/lbl_players"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Players:"
+        android:textColor="#888888"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lbl_address" />
+
+    <TextView
+        android:id="@+id/det_players"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:text="57 / 500"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        app:layout_baselineToBaselineOf="@id/lbl_players"
+        app:layout_constraintStart_toEndOf="@id/lbl_players" />
+
+    <TextView
+        android:id="@+id/lbl_ping"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Ping:"
+        android:textColor="#888888"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lbl_players" />
+
+    <TextView
+        android:id="@+id/det_ping"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:text="69ms"
+        android:textColor="#00FF66"
+        android:textSize="14sp"
+        app:layout_baselineToBaselineOf="@id/lbl_ping"
+        app:layout_constraintStart_toEndOf="@id/lbl_ping" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_play_game"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:backgroundTint="#FFCC00"
+        app:fabSize="normal"
+        app:srcCompat="@android:drawable/ic_media_play"
+        app:tint="#000000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lbl_ping" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
