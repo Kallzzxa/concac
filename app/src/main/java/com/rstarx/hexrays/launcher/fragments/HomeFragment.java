@@ -32,6 +32,7 @@ import com.rstarx.hexrays.game.SAMP;
 import com.rstarx.hexrays.launcher.MainActivity;
 import com.rstarx.hexrays.launcher.util.ButtonAnimator;
 import com.rstarx.hexrays.launcher.util.SAMPServerInfo;
+import com.rstarx.hexrays.launcher.util.SampQueryAPI;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -194,6 +195,8 @@ public class HomeFragment extends Fragment {
         TextView tvAddress = detailDialog.findViewById(R.id.det_address);
         TextView tvPlayers = detailDialog.findViewById(R.id.det_players);
         TextView tvPing = detailDialog.findViewById(R.id.det_ping);
+        View statusDot = detailDialog.findViewById(R.id.status_dot);
+        TextView statusText = detailDialog.findViewById(R.id.status_text);
         ImageView btnClose = detailDialog.findViewById(R.id.btn_close_detail);
         FloatingActionButton fabPlay = detailDialog.findViewById(R.id.fab_play_game);
         LineChart lineChart = detailDialog.findViewById(R.id.ping_line_chart);
@@ -201,6 +204,11 @@ public class HomeFragment extends Fragment {
         tvName.setText(server.getServerName());
         tvAddress.setText(server.getAddress() + ":" + server.getPort());
         tvPlayers.setText(server.getCurrentPlayerCount() + " / " + server.getMaxPlayerCount());
+
+        // Trạng thái ban đầu: đang kiểm tra, chưa biết online/offline thật
+        statusDot.setBackgroundResource(R.drawable.bg_dot_gray);
+        statusText.setText("Checking...");
+        statusText.setTextColor(Color.parseColor("#8A8F98"));
 
         // Setup định dạng LineChart mẫu
         ArrayList<Entry> entries = new ArrayList<>();
@@ -233,25 +241,54 @@ public class HomeFragment extends Fragment {
             @Override
             public void run() {
                 new Thread(() -> {
-                    long pingResult = -1;
-                    try {
-                        String ipAddress = server.getAddress();
-                        long startTime = System.currentTimeMillis();
-                        Process process = Runtime.getRuntime().exec("/system/bin/ping -c 1 -w 1 " + ipAddress);
-                        int status = process.waitFor();
-                        if (status == 0) {
-                            pingResult = System.currentTimeMillis() - startTime;
-                        }
-                    } catch (Exception e) {
-                        pingResult = -1;
+                    // Query THẬT giao thức SA-MP (ping/pong với nonce ngẫu nhiên)
+                    // để xác định Online/Offline chính xác, không dùng ICMP ping hệ thống nữa
+                    long startTime = System.currentTimeMillis();
+                    SampQueryAPI pingQuery = new SampQueryAPI(server.getAddress(), server.getPort());
+                    boolean isOnline = pingQuery.mo7166d();
+                    long elapsed = System.currentTimeMillis() - startTime;
+
+                    // Đóng socket ngay sau khi dùng xong để tránh rò rỉ file descriptor
+                    if (pingQuery.f7277a != null) {
+                        pingQuery.f7277a.close();
                     }
 
-                    final long finalPing = pingResult;
+                    int currentPlayers = -1;
+                    int maxPlayers = -1;
+
+                    if (isOnline) {
+                        // Chỉ query thêm thông tin server khi đã xác nhận chắc chắn Online
+                        SampQueryAPI infoQuery = new SampQueryAPI(server.getAddress(), server.getPort());
+                        String[] info = infoQuery.mo7164b();
+                        if (infoQuery.f7277a != null) {
+                            infoQuery.f7277a.close();
+                        }
+                        if (info != null && info.length >= 3) {
+                            try {
+                                currentPlayers = Integer.parseInt(info[1]);
+                                maxPlayers = Integer.parseInt(info[2]);
+                            } catch (NumberFormatException ignored) {}
+                        }
+                    }
+
+                    final boolean finalOnline = isOnline;
+                    final long finalPing = elapsed;
+                    final int finalPlayers = currentPlayers;
+                    final int finalMax = maxPlayers;
+
                     if (getActivity() != null) {
                         getActivity().runOnUiThread(() -> {
-                            if (finalPing >= 0) {
+                            if (finalOnline) {
                                 tvPing.setText(finalPing + " ms");
                                 tvPing.setTextColor(Color.parseColor("#3DDC84"));
+
+                                statusDot.setBackgroundResource(R.drawable.bg_dot_green);
+                                statusText.setText("Online");
+                                statusText.setTextColor(Color.parseColor("#3DDC84"));
+
+                                if (finalPlayers >= 0 && finalMax >= 0) {
+                                    tvPlayers.setText(finalPlayers + " / " + finalMax);
+                                }
 
                                 LineData data = lineChart.getData();
                                 if (data != null) {
@@ -267,6 +304,10 @@ public class HomeFragment extends Fragment {
                             } else {
                                 tvPing.setText("Timeout");
                                 tvPing.setTextColor(Color.parseColor("#FF5252"));
+
+                                statusDot.setBackgroundResource(R.drawable.bg_dot_red);
+                                statusText.setText("Offline");
+                                statusText.setTextColor(Color.parseColor("#FF5252"));
                             }
                         });
                     }
@@ -351,4 +392,4 @@ public class HomeFragment extends Fragment {
             }
         }
     }
-            }
+    }
