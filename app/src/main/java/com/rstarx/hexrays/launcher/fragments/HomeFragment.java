@@ -38,8 +38,6 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -157,7 +155,6 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
-    // Hiển thị danh sách máy chủ để chọn
     private void showServerSelectionDialog(final ArrayList<SAMPServerInfo> servers) {
         Dialog dialog = new Dialog(getContext());
         dialog.setContentView(R.layout.dialog_server_selection);
@@ -168,7 +165,6 @@ public class HomeFragment extends Fragment {
         RecyclerView rvServers = dialog.findViewById(R.id.rv_servers);
         rvServers.setLayoutManager(new LinearLayoutManager(getContext()));
         
-        // Nhấn dòng máy chủ sẽ mở Tab xem chi tiết đồ thị
         rvServers.setAdapter(new ServerAdapter(servers, selectedServer -> {
             dialog.dismiss();
             showServerDetailDialog(selectedServer);
@@ -180,7 +176,7 @@ public class HomeFragment extends Fragment {
         dialog.show();
     }
 
-    // Tab xem thông tin cấu hình chi tiết & Vẽ biểu đồ xung Ping Real-time
+    // ĐÃ CHỈNH SỬA: Logic xử lý đo xung Ping và cập nhật đồ thị thời gian thực
     private void showServerDetailDialog(final SAMPServerInfo server) {
         Dialog detailDialog = new Dialog(getContext());
         detailDialog.setContentView(R.layout.dialog_server_detail);
@@ -222,20 +218,22 @@ public class HomeFragment extends Fragment {
         lineChart.getLegend().setEnabled(false);
         lineChart.invalidate();
 
-        // Luồng đo đạc dữ liệu Ping thực
         xValue = 0;
         pingHandler = new Handler(Looper.getMainLooper());
         pingRunnable = new Runnable() {
             @Override
             public void run() {
                 new Thread(() -> {
-                    long pingResult;
+                    long pingResult = -1;
                     try {
+                        // SỬA ĐỔI: Sử dụng lệnh ping ICMP hệ thống thay thế cho TCP Socket lỗi thời
+                        String ipAddress = server.getAddress();
                         long startTime = System.currentTimeMillis();
-                        Socket socket = new Socket();
-                        socket.connect(new InetSocketAddress(server.getAddress(), server.getPort()), 1500);
-                        socket.close();
-                        pingResult = System.currentTimeMillis() - startTime;
+                        Process process = Runtime.getRuntime().exec("/system/bin/ping -c 1 -w 1 " + ipAddress);
+                        int status = process.waitFor();
+                        if (status == 0) {
+                            pingResult = System.currentTimeMillis() - startTime;
+                        }
                     } catch (Exception e) {
                         pingResult = -1;
                     }
@@ -256,6 +254,7 @@ public class HomeFragment extends Fragment {
                                     data.notifyDataChanged();
                                     lineChart.notifyDataSetChanged();
                                     lineChart.moveViewToX(data.getEntryCount());
+                                    lineChart.invalidate(); // Ép buộc đồ thị load xung mới ngay lập tức
                                 }
                             } else {
                                 tvPing.setText("Timeout");
@@ -264,12 +263,11 @@ public class HomeFragment extends Fragment {
                         });
                     }
                 }).start();
-                pingHandler.postDelayed(this, 1000);
+                pingHandler.postDelayed(this, 1000); // Lặp lại sau mỗi 1 giây
             }
         };
         pingHandler.post(pingRunnable);
 
-        // Hủy vòng lặp Ping tránh ngốn RAM khi đóng tab
         btnClose.setOnClickListener(v -> {
             stopPingTask();
             detailDialog.dismiss();
@@ -277,7 +275,6 @@ public class HomeFragment extends Fragment {
 
         detailDialog.setOnDismissListener(dialogInterface -> stopPingTask());
 
-        // Bấm nút Play chuyển tiếp IP Port kích hoạt game
         fabPlay.setOnClickListener(v -> {
             stopPingTask();
             detailDialog.dismiss();
@@ -296,7 +293,6 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    // Adapter nạp dữ liệu Server lên RecyclerView
     private static class ServerAdapter extends RecyclerView.Adapter<ServerAdapter.ViewHolder> {
         private final ArrayList<SAMPServerInfo> serverList;
         private final OnServerClickListener listener;
