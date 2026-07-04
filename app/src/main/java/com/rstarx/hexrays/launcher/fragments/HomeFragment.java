@@ -46,7 +46,7 @@ import java.util.ArrayList;
 public class HomeFragment extends Fragment {
 
     private static final String HOSTED_URL = "https://kethrnensm.github.io/web/hosted.json";
-    
+
     private Handler pingHandler;
     private Runnable pingRunnable;
     private int xValue = 0;
@@ -60,20 +60,20 @@ public class HomeFragment extends Fragment {
         }
 
         // Mạng xã hội
-        ImageView yt_image = (ImageView) view.findViewById(R.id.youtube_logo);
+        ImageView yt_image = view.findViewById(R.id.youtube_logo);
         yt_image.setOnTouchListener(new ButtonAnimator(getContext(), yt_image));
         yt_image.setOnClickListener(v -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://bit.ly/x1y2z_yt"))));
 
-        ImageView discord_image = (ImageView) view.findViewById(R.id.discord_logo);
+        ImageView discord_image = view.findViewById(R.id.discord_logo);
         discord_image.setOnTouchListener(new ButtonAnimator(getContext(), discord_image));
         discord_image.setOnClickListener(v -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://discord.gg/jvKM7HR3Dc"))));
 
-        ImageView internet_logo = (ImageView) view.findViewById(R.id.internet_button);
+        ImageView internet_logo = view.findViewById(R.id.internet_button);
         internet_logo.setOnTouchListener(new ButtonAnimator(getContext(), internet_logo));
         internet_logo.setOnClickListener(v -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://samp-mobile.shop"))));
 
         // Tab chuyển vùng nhanh
-        ImageView btnTabHome = (ImageView) view.findViewById(R.id.btn_tab_home);
+        ImageView btnTabHome = view.findViewById(R.id.btn_tab_home);
         if (btnTabHome != null) {
             btnTabHome.setOnTouchListener(new ButtonAnimator(getContext(), btnTabHome));
             btnTabHome.setOnClickListener(v -> {
@@ -83,7 +83,7 @@ public class HomeFragment extends Fragment {
             });
         }
 
-        ImageView btnTabSettings = (ImageView) view.findViewById(R.id.btn_tab_settings);
+        ImageView btnTabSettings = view.findViewById(R.id.btn_tab_settings);
         if (btnTabSettings != null) {
             btnTabSettings.setOnTouchListener(new ButtonAnimator(getContext(), btnTabSettings));
             btnTabSettings.setOnClickListener(v -> {
@@ -94,11 +94,11 @@ public class HomeFragment extends Fragment {
         }
 
         // Nút THAM GIA GAME
-        Button btnJoinGame = (Button) view.findViewById(R.id.btn_join_game);
+        Button btnJoinGame = view.findViewById(R.id.btn_join_game);
         btnJoinGame.setOnTouchListener(new ButtonAnimator(getContext(), btnJoinGame));
         btnJoinGame.setOnClickListener(v -> {
             Toast.makeText(getContext(), "Đang tải danh sách máy chủ...", Toast.LENGTH_SHORT).show();
-            
+
             new Thread(() -> {
                 final ArrayList<SAMPServerInfo> serverList = new ArrayList<>();
                 boolean success = false;
@@ -121,7 +121,7 @@ public class HomeFragment extends Fragment {
 
                         JSONObject jsonObject = new JSONObject(response.toString());
                         JSONArray jsonArray = jsonObject.getJSONArray("query");
-                        
+
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject obj = jsonArray.getJSONObject(i);
                             SAMPServerInfo server = new SAMPServerInfo();
@@ -164,7 +164,7 @@ public class HomeFragment extends Fragment {
 
         RecyclerView rvServers = dialog.findViewById(R.id.rv_servers);
         rvServers.setLayoutManager(new LinearLayoutManager(getContext()));
-        
+
         rvServers.setAdapter(new ServerAdapter(servers, selectedServer -> {
             dialog.dismiss();
             showServerDetailDialog(selectedServer);
@@ -176,7 +176,6 @@ public class HomeFragment extends Fragment {
         dialog.show();
     }
 
-    // ĐÃ CHỈNH SỬA: Logic xử lý đo xung Ping và cập nhật đồ thị thời gian thực
     private void showServerDetailDialog(final SAMPServerInfo server) {
         Dialog detailDialog = new Dialog(getContext());
         detailDialog.setContentView(R.layout.dialog_server_detail);
@@ -193,14 +192,15 @@ public class HomeFragment extends Fragment {
         LineChart lineChart = detailDialog.findViewById(R.id.ping_line_chart);
 
         tvName.setText(server.getServerName());
+        // ĐỒNG BỘ: address dài dùng singleLine + ellipsize trong XML, không cần wrap tay ở đây
         tvAddress.setText(server.getAddress() + ":" + server.getPort());
         tvPlayers.setText(server.getCurrentPlayerCount() + " / " + server.getMaxPlayerCount());
 
         // Setup định dạng LineChart mẫu
         ArrayList<Entry> entries = new ArrayList<>();
         LineDataSet dataSet = new LineDataSet(entries, "Ping (ms)");
-        dataSet.setColor(Color.parseColor("#FFCC00"));
-        dataSet.setCircleColor(Color.parseColor("#FFCC00"));
+        dataSet.setColor(Color.parseColor("#FFC933"));
+        dataSet.setCircleColor(Color.parseColor("#FFC933"));
         dataSet.setLineWidth(2f);
         dataSet.setCircleRadius(3f);
         dataSet.setDrawCircleHole(false);
@@ -209,13 +209,16 @@ public class HomeFragment extends Fragment {
 
         LineData lineData = new LineData(dataSet);
         lineChart.setData(lineData);
+        lineChart.setBackgroundColor(Color.TRANSPARENT);
         lineChart.getXAxis().setDrawGridLines(false);
         lineChart.getXAxis().setDrawLabels(false);
-        lineChart.getAxisLeft().setTextColor(Color.WHITE);
+        lineChart.getAxisLeft().setTextColor(Color.parseColor("#8A8F98"));
         lineChart.getAxisLeft().setDrawGridLines(true);
+        lineChart.getAxisLeft().setGridColor(Color.parseColor("#22FFFFFF"));
         lineChart.getAxisRight().setEnabled(false);
         lineChart.getDescription().setEnabled(false);
         lineChart.getLegend().setEnabled(false);
+        lineChart.setDrawBorders(false);
         lineChart.invalidate();
 
         xValue = 0;
@@ -226,7 +229,6 @@ public class HomeFragment extends Fragment {
                 new Thread(() -> {
                     long pingResult = -1;
                     try {
-                        // SỬA ĐỔI: Sử dụng lệnh ping ICMP hệ thống thay thế cho TCP Socket lỗi thời
                         String ipAddress = server.getAddress();
                         long startTime = System.currentTimeMillis();
                         Process process = Runtime.getRuntime().exec("/system/bin/ping -c 1 -w 1 " + ipAddress);
@@ -243,8 +245,8 @@ public class HomeFragment extends Fragment {
                         getActivity().runOnUiThread(() -> {
                             if (finalPing >= 0) {
                                 tvPing.setText(finalPing + " ms");
-                                tvPing.setTextColor(Color.parseColor("#00FF66"));
-                                
+                                tvPing.setTextColor(Color.parseColor("#3DDC84"));
+
                                 LineData data = lineChart.getData();
                                 if (data != null) {
                                     data.addEntry(new Entry(xValue++, finalPing), 0);
@@ -254,16 +256,16 @@ public class HomeFragment extends Fragment {
                                     data.notifyDataChanged();
                                     lineChart.notifyDataSetChanged();
                                     lineChart.moveViewToX(data.getEntryCount());
-                                    lineChart.invalidate(); // Ép buộc đồ thị load xung mới ngay lập tức
+                                    lineChart.invalidate();
                                 }
                             } else {
                                 tvPing.setText("Timeout");
-                                tvPing.setTextColor(Color.RED);
+                                tvPing.setTextColor(Color.parseColor("#FF5252"));
                             }
                         });
                     }
                 }).start();
-                pingHandler.postDelayed(this, 1000); // Lặp lại sau mỗi 1 giây
+                pingHandler.postDelayed(this, 1000);
             }
         };
         pingHandler.post(pingRunnable);
@@ -317,7 +319,8 @@ public class HomeFragment extends Fragment {
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             SAMPServerInfo server = serverList.get(position);
             holder.tvName.setText(server.getServerName());
-            holder.tvOnline.setText(server.getCurrentPlayerCount() + "/" + server.getMaxPlayerCount());
+            // ĐỒNG BỘ: item_server.xml dùng id "tv_server_status", định dạng "hiện/tối đa"
+            holder.tvStatus.setText(server.getCurrentPlayerCount() + " / " + server.getMaxPlayerCount());
             holder.itemView.setOnClickListener(v -> listener.onServerClick(server));
         }
 
@@ -327,11 +330,11 @@ public class HomeFragment extends Fragment {
         }
 
         public static class ViewHolder extends RecyclerView.ViewHolder {
-            TextView tvName, tvOnline;
+            TextView tvName, tvStatus;
             public ViewHolder(@NonNull View itemView) {
                 super(itemView);
                 tvName = itemView.findViewById(R.id.tv_server_name);
-                tvOnline = itemView.findViewById(R.id.tv_online_count);
+                tvStatus = itemView.findViewById(R.id.tv_server_status);
             }
         }
     }
