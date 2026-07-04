@@ -106,7 +106,7 @@ uint32_t CPad__GetJump_hook(uintptr_t thiz)
 	}
 	else
 	{
-		LocalPlayerKeys.bKeys[ePadKeys::KEY_JUMP] = CPad__JumpJustDown(thiz);
+		LocalPlayerKeys.bKeys[ePadKeys::KEY_JUMP] = CPad__GetJump(thiz);  // FIXED
 		return LocalPlayerKeys.bKeys[ePadKeys::KEY_JUMP];
 	}
 }
