@@ -23,15 +23,18 @@
         android:id="@+id/det_server_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="40dp"
+        android:layout_marginEnd="12dp"
         android:fontFamily="@font/montserrat_bold"
+        android:singleLine="true"
+        android:ellipsize="end"
         android:text="server 1"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@id/btn_close_detail"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@id/btn_close_detail"
+        app:layout_constraintBottom_toBottomOf="@id/btn_close_detail" />
 
     <View
         android:id="@+id/info_divider_top"
@@ -39,7 +42,7 @@
         android:layout_height="1dp"
         android:layout_marginTop="14dp"
         android:background="#22FFFFFF"
-        app:layout_constraintTop_toBottomOf="@id/det_server_name"
+        app:layout_constraintTop_toBottomOf="@id/btn_close_detail"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -96,8 +99,11 @@
 
         <TextView
             android:id="@+id/det_players"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:ellipsize="end"
             android:fontFamily="@font/montserrat_bold"
             android:text="0 / 1000"
             android:textColor="#FFFFFF"
@@ -125,8 +131,11 @@
 
         <TextView
             android:id="@+id/det_ping"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:ellipsize="end"
             android:fontFamily="@font/montserrat_bold"
             android:text="195 ms"
             android:textColor="#3DDC84"
@@ -145,6 +154,7 @@
         app:layout_constraintTop_toBottomOf="@id/row_ping" />
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/chart_card"
         android:layout_width="0dp"
         android:layout_height="140dp"
         android:layout_marginTop="6dp"
@@ -178,6 +188,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ping_line_chart" />
+        app:layout_constraintTop_toBottomOf="@id/chart_card" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
