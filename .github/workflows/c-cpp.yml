@@ -1,4 +1,4 @@
-Name: Build APK Windows (Debug Version)
+name: Build APK Windows (Debug Version)
 
 on:
   push:
