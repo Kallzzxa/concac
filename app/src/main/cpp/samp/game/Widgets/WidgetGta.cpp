@@ -57,13 +57,19 @@ eWidgetState ProcessFixedWidget(CWidgetGta* pWidget)
         case -1:
             return STATE_NONE;
         case WidgetIDs::WIDGET_ATTACK:
-        case WidgetIDs::WIDGET_SPRINT:
-            if(pPlayerPed->IsInVehicle() ||
-               pPlayerPed->IsInJetpackMode())
-            {
-                return STATE_FIXED;
-            }
-            break;
+    if(pPlayerPed->IsInVehicle() ||
+       pPlayerPed->IsInJetpackMode())
+    {
+        return STATE_FIXED;
+    }
+    break;
+
+case WidgetIDs::WIDGET_SPRINT:
+    if(pPlayerPed->IsInVehicle())
+    {
+        return STATE_FIXED;
+    }
+    break;
         case WidgetIDs::WIDGET_ACCELERATE:
         case WidgetIDs::WIDGET_BRAKE:
             if(!pPlayerPed->IsInVehicle() &&
