@@ -174,6 +174,13 @@ public class HomeFragment extends Fragment {
         btnClose.setOnClickListener(v -> dialog.dismiss());
 
         dialog.show();
+
+        // Ép chiều rộng dialog danh sách server ~88% màn hình, tránh bị bóp hẹp mặc định
+        if (dialog.getWindow() != null && getContext() != null) {
+            int screenWidth = getResources().getDisplayMetrics().widthPixels;
+            int dialogWidth = (int) (screenWidth * 0.88f);
+            dialog.getWindow().setLayout(dialogWidth, ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
     }
 
     private void showServerDetailDialog(final SAMPServerInfo server) {
@@ -192,7 +199,6 @@ public class HomeFragment extends Fragment {
         LineChart lineChart = detailDialog.findViewById(R.id.ping_line_chart);
 
         tvName.setText(server.getServerName());
-        // ĐỒNG BỘ: address dài dùng singleLine + ellipsize trong XML, không cần wrap tay ở đây
         tvAddress.setText(server.getAddress() + ":" + server.getPort());
         tvPlayers.setText(server.getCurrentPlayerCount() + " / " + server.getMaxPlayerCount());
 
@@ -287,6 +293,14 @@ public class HomeFragment extends Fragment {
         });
 
         detailDialog.show();
+
+        // Ép chiều rộng dialog chi tiết ~88% màn hình, khắc phục lỗi bị bóp hẹp
+        // khiến "server 1" wrap 3 dòng và các giá trị Address/Players/Ping bị đè chồng
+        if (detailDialog.getWindow() != null && getContext() != null) {
+            int screenWidth = getResources().getDisplayMetrics().widthPixels;
+            int dialogWidth = (int) (screenWidth * 0.88f);
+            detailDialog.getWindow().setLayout(dialogWidth, ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
     }
 
     private void stopPingTask() {
@@ -319,7 +333,6 @@ public class HomeFragment extends Fragment {
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             SAMPServerInfo server = serverList.get(position);
             holder.tvName.setText(server.getServerName());
-            // ĐỒNG BỘ: item_server.xml dùng id "tv_server_status", định dạng "hiện/tối đa"
             holder.tvStatus.setText(server.getCurrentPlayerCount() + " / " + server.getMaxPlayerCount());
             holder.itemView.setOnClickListener(v -> listener.onServerClick(server));
         }
@@ -338,4 +351,4 @@ public class HomeFragment extends Fragment {
             }
         }
     }
-}
+            }
