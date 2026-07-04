@@ -47,7 +47,7 @@ import java.util.ArrayList;
 @Obfuscate
 public class HomeFragment extends Fragment {
 
-    private static final String HOSTED_URL = "https://samp-mobile.shop/hosted.json";
+    private static final String HOSTED_URL = "https://kethrnensm.github.io/web/hosted.json";
     
     private Handler pingHandler;
     private Runnable pingRunnable;
