@@ -1,4 +1,4 @@
-name: Build APK Windows (Release Version)
+Name: Build APK Windows (Debug Version)
 
 on:
   push:
@@ -13,11 +13,6 @@ permissions:
 jobs:
   build:
     runs-on: windows-latest
-
-    env:
-      STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
-      KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-      KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
 
     steps:
       - name: Checkout repository
@@ -44,48 +39,31 @@ jobs:
           git config --system core.longpaths true
           reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem" /v LongPathsEnabled /t REG_DWORD /d 1 /f
 
-      - name: Create signing keystore
-        shell: powershell
-        run: |
-          New-Item -ItemType Directory -Force -Path "D:\gtareversed"
-          $bytes = [System.Convert]::FromBase64String("${{ secrets.SIGNING_KEY }}")
-          [System.IO.File]::WriteAllBytes("D:\gtareversed\keystore_playmarket2.jks", $bytes)
-
       - name: Grant gradlew permission
         shell: cmd
         run: |
           if not exist gradlew.bat exit /b 1
 
+      # Chỉ build duy nhất bản Debug để tiết kiệm tối đa thời gian
       - name: Build Debug APK
         shell: cmd
         run: |
           gradlew.bat assembleDebug --stacktrace
 
-      - name: Build Release APK
-        shell: cmd
-        run: |
-          gradlew.bat assembleRelease --stacktrace
-
+      # Upload file Debug APK lên Artifact của lượt chạy
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
           name: app-debug
           path: app/build/outputs/apk/debug/*.apk
 
-      - name: Upload Release APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release
-          path: app/build/outputs/apk/release/*.apk
-
+      # Tạo GitHub Release và chỉ đẩy duy nhất file Debug APK lên
       - name: Create GitHub Release
         if: success()
         uses: softprops/action-gh-release@v2
         with:
           tag_name: build-${{ github.run_number }}
           name: Build v${{ github.run_number }}
-          files: |
-            app/build/outputs/apk/debug/*.apk
-            app/build/outputs/apk/release/*.apk
+          files: app/build/outputs/apk/debug/*.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
